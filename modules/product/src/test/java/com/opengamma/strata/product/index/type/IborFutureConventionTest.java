@@ -31,7 +31,10 @@ import com.opengamma.strata.product.index.IborFutureTrade;
 
 /**
  * Tests {@link IborFutureConvention}.
+ * 
+ * @deprecated Replaced by IborFutureContractSpecTest
  */
+@Deprecated
 public class IborFutureConventionTest {
 
   private static final ReferenceData REF_DATA = ReferenceData.standard();

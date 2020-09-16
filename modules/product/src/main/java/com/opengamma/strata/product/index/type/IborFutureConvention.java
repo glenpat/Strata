@@ -29,7 +29,10 @@ import com.opengamma.strata.product.index.IborFutureTrade;
  * <p>
  * To manually create a convention, see {@link ImmutableIborFutureConvention}.
  * To register a specific convention, see {@code IborFutureConvention.ini}.
+ * 
+ * @deprecated Use {@link IborFutureContractSpec}
  */
+@Deprecated
 public interface IborFutureConvention
     extends TradeConvention, Named {
 
