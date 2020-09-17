@@ -14,6 +14,7 @@ import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.ReferenceDataId;
 import com.opengamma.strata.basics.StandardId;
 import com.opengamma.strata.collect.ArgChecker;
+import org.springframework.data.annotation.Persistent;
 
 /**
  * An identifier for an ETD product.
@@ -25,6 +26,7 @@ import com.opengamma.strata.collect.ArgChecker;
  * unique for the reference data lookup. As such, it is acceptable to use
  * an identifier from a well-known global or vendor symbology.
  */
+@Persistent
 public final class EtdContractSpecId
     implements ReferenceDataId<EtdContractSpec>, Serializable {
 

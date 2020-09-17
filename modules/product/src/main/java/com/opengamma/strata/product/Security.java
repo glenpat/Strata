@@ -11,6 +11,8 @@ import com.opengamma.strata.basics.currency.Currency;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Random;
+
 /**
  * A security that can be traded.
  * <p>
@@ -25,9 +27,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * <p>
  * Implementations of this interface must be immutable beans.
  */
-@Document
+@Document(collection = "security")
 public interface Security {
-
   /**
    * Gets the standard security information.
    * <p>
@@ -45,7 +46,6 @@ public interface Security {
    * 
    * @return the security identifier
    */
-  @Id
   public default SecurityId getSecurityId() {
     return getInfo().getId();
   }

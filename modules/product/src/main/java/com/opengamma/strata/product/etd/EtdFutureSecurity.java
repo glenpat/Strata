@@ -31,6 +31,10 @@ import com.opengamma.strata.product.PositionInfo;
 import com.opengamma.strata.product.SecurityId;
 import com.opengamma.strata.product.SecurityInfo;
 import com.opengamma.strata.product.TradeInfo;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * An instrument representing an exchange traded derivative (ETD) future.
@@ -38,6 +42,7 @@ import com.opengamma.strata.product.TradeInfo;
  * A security representing a standardized contact between two parties to buy or sell an asset at a
  * future date for an agreed price.
  */
+@Document(collection = "security")
 @BeanDefinition
 public final class EtdFutureSecurity
     implements EtdSecurity, ImmutableBean, Serializable {
@@ -50,11 +55,13 @@ public final class EtdFutureSecurity
    * <p>
    * This includes the security identifier.
    */
+  @DBRef
   @PropertyDefinition(validate = "notNull", overrideGet = true)
   private final SecurityInfo info;
   /**
    * The ID of the contract specification from which this security is derived.
    */
+  @Indexed
   @PropertyDefinition(validate = "notNull", overrideGet = true)
   private final EtdContractSpecId contractSpecId;
   /**
@@ -62,6 +69,7 @@ public final class EtdFutureSecurity
    * <p>
    * Expiry will occur on a date implied by the variant of the ETD.
    */
+  @Indexed
   @PropertyDefinition(validate = "notNull", overrideGet = true)
   private final YearMonth expiry;
   /**
@@ -72,10 +80,11 @@ public final class EtdFutureSecurity
    * <p>
    * When building, this defaults to 'Monthly'.
    */
+  @Indexed
   @PropertyDefinition(validate = "notNull", overrideGet = true)
   private final EtdVariant variant;
 
-  //-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
   /**
    * Obtains an instance from a contract specification, expiry year-month and variant.
    * <p>
