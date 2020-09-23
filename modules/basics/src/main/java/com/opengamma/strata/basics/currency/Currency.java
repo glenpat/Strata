@@ -5,6 +5,15 @@
  */
 package com.opengamma.strata.basics.currency;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.opengamma.strata.collect.ArgChecker;
+import org.joda.convert.FromString;
+import org.joda.convert.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,14 +21,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.joda.convert.FromString;
-import org.joda.convert.ToString;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.opengamma.strata.collect.ArgChecker;
 
 /**
  * A unit of currency.
@@ -37,6 +38,7 @@ import com.opengamma.strata.collect.ArgChecker;
  * <p>
  * This class is immutable and thread-safe.
  */
+@Document("currency")
 public final class Currency
     implements Comparable<Currency>, Serializable {
 
@@ -287,6 +289,7 @@ public final class Currency
   /**
    * The currency code.
    */
+  @Id
   private final String code;
   /**
    * The number of fraction digits, such as 2 for cents in the dollar.
@@ -330,9 +333,9 @@ public final class Currency
    * @throws IllegalArgumentException if the currency code is invalid
    */
   @FromString
-  public static Currency of(String currencyCode) {
+  public static Currency of(final String currencyCode) {
     ArgChecker.notNull(currencyCode, "currencyCode");
-    Currency currency = CONFIGURED.get(currencyCode);
+    final Currency currency = CONFIGURED.get(currencyCode);
     if (currency == null) {
       return addCode(currencyCode);
     }
@@ -340,7 +343,7 @@ public final class Currency
   }
 
   // add code
-  private static Currency addCode(String currencyCode) {
+  private static Currency addCode(final String currencyCode) {
     ArgChecker.matches(CODE_MATCHER, 3, 3, currencyCode, "currencyCode", "[A-Z][A-Z][A-Z]");
     return DYNAMIC.computeIfAbsent(currencyCode, code -> new Currency(code, 0, "USD"));
   }
@@ -359,20 +362,21 @@ public final class Currency
    * @return the singleton instance
    * @throws IllegalArgumentException if the currency code is invalid
    */
-  public static Currency parse(String currencyCode) {
+  public static Currency parse(final String currencyCode) {
     ArgChecker.notNull(currencyCode, "currencyCode");
     return of(currencyCode.toUpperCase(Locale.ENGLISH));
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Restricted constructor, called only by {@code CurrencyProperties}.
-   * 
+   *
    * @param code  the three letter currency code, validated
    * @param fractionDigits  the number of fraction digits, validated
    * @param triangulationCurrency  the triangulation currency
    */
-  Currency(String code, int fractionDigits, String triangulationCurrency) {
+  Currency(final String code, final int fractionDigits, final String triangulationCurrency) {
     this.code = code;
     this.minorUnitDigits = fractionDigits;
     this.triangulationCurrency = triangulationCurrency;
@@ -386,7 +390,7 @@ public final class Currency
    * @return the singleton
    */
   private Object readResolve() {
-    return Currency.of(code);
+    return Currency.of(this.code);
   }
 
   //-------------------------------------------------------------------------
@@ -396,7 +400,7 @@ public final class Currency
    * @return the three letter ISO code
    */
   public String getCode() {
-    return code;
+    return this.code;
   }
 
   /**
@@ -408,7 +412,7 @@ public final class Currency
    * @return the number of fraction digits
    */
   public int getMinorUnitDigits() {
-    return minorUnitDigits;
+    return this.minorUnitDigits;
   }
 
   /**
@@ -424,19 +428,20 @@ public final class Currency
    * @return the triangulation currency
    */
   public Currency getTriangulationCurrency() {
-    return Currency.of(triangulationCurrency);
+    return Currency.of(this.triangulationCurrency);
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Rounds the specified amount according to the minor units.
    * <p>
    * For example, 'USD' has 2 minor digits, so 63.347 will be rounded to 63.35.
-   * 
+   *
    * @param amount  the amount to round
    * @return the rounded amount
    */
-  public double roundMinorUnits(double amount) {
+  public double roundMinorUnits(final double amount) {
     return roundMinorUnits(BigDecimal.valueOf(amount)).doubleValue();
   }
 
@@ -444,39 +449,40 @@ public final class Currency
    * Rounds the specified amount according to the minor units.
    * <p>
    * For example, 'USD' has 2 minor digits, so 63.347 will be rounded to 63.35.
-   * 
+   *
    * @param amount  the amount to round
    * @return the rounded amount
    */
-  public BigDecimal roundMinorUnits(BigDecimal amount) {
-    return amount.setScale(minorUnitDigits, RoundingMode.HALF_UP);
+  public BigDecimal roundMinorUnits(final BigDecimal amount) {
+    return amount.setScale(this.minorUnitDigits, RoundingMode.HALF_UP);
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Compares this currency to another.
    * <p>
    * The comparison sorts alphabetically by the three letter currency code.
-   * 
+   *
    * @param other  the other currency
    * @return negative if less, zero if equal, positive if greater
    */
   @Override
-  public int compareTo(Currency other) {
+  public int compareTo(final Currency other) {
     // hash code is unique and ordered so can be used for compareTo
-    return cachedHashCode - other.cachedHashCode;
+    return this.cachedHashCode - other.cachedHashCode;
   }
 
   /**
    * Checks if this currency equals another currency.
    * <p>
    * The comparison checks the three letter currency code.
-   * 
+   *
    * @param obj  the other currency, null returns false
    * @return true if equal
    */
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (obj == this) {
       return true;
     }
@@ -487,9 +493,9 @@ public final class Currency
   }
 
   // called by CurrencyAmount
-  boolean equals(Currency other) {
+  boolean equals(final Currency other) {
     // hash code is unique so can be used for equals
-    return other.cachedHashCode == cachedHashCode;
+    return other.cachedHashCode == this.cachedHashCode;
   }
 
   /**
@@ -499,7 +505,7 @@ public final class Currency
    */
   @Override
   public int hashCode() {
-    return cachedHashCode;
+    return this.cachedHashCode;
   }
 
   //-------------------------------------------------------------------------
@@ -511,7 +517,7 @@ public final class Currency
   @Override
   @ToString
   public String toString() {
-    return code;
+    return this.code;
   }
 
 }

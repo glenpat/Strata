@@ -16,6 +16,8 @@ import org.joda.convert.ToString;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.math.DoubleMath;
 import com.opengamma.strata.collect.ArgChecker;
+import org.springframework.data.annotation.Persistent;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 /**
  * An amount of a currency.
@@ -42,6 +44,7 @@ import com.opengamma.strata.collect.ArgChecker;
  * <p>
  * This class is immutable and thread-safe.
  */
+@Persistent
 public final class CurrencyAmount
     implements FxConvertible<CurrencyAmount>, Comparable<CurrencyAmount>, Serializable {
 
@@ -53,6 +56,7 @@ public final class CurrencyAmount
    * <p>
    * For example, in the value 'GBP 12.34' the currency is 'GBP'.
    */
+  @DBRef
   private final Currency currency;
   /**
    * The amount of the currency.
