@@ -5,9 +5,9 @@
  */
 package com.opengamma.strata.collect;
 
-import static com.opengamma.strata.collect.TestHelper.assertUtilityClass;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableSortedMap;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -19,10 +19,9 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Test;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableSortedMap;
+import static com.opengamma.strata.collect.TestHelper.assertUtilityClass;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Test ArgChecker.
@@ -62,7 +61,6 @@ public class ArgCheckerTest {
         .isThrownBy(() -> ArgChecker.isTrue(false, "Message {} {} {}", "A", 2, 3d))
         .withMessage("Message A 2 3.0");
 
-    ;
   }
 
   @Test
@@ -273,8 +271,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_Array_ok() {
-    Object[] expected = new Object[] {"Element"};
-    Object[] result = ArgChecker.notEmpty(expected, "name");
+    final Object[] expected = new Object[] {"Element"};
+    final Object[] result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -309,8 +307,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_intArray_ok() {
-    int[] expected = new int[] {6};
-    int[] result = ArgChecker.notEmpty(expected, "name");
+    final int[] expected = new int[] {6};
+    final int[] result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -331,8 +329,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_longArray_ok() {
-    long[] expected = new long[] {6L};
-    long[] result = ArgChecker.notEmpty(expected, "name");
+    final long[] expected = new long[] {6L};
+    final long[] result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -353,8 +351,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_doubleArray_ok() {
-    double[] expected = new double[] {6.0d};
-    double[] result = ArgChecker.notEmpty(expected, "name");
+    final double[] expected = new double[] {6.0d};
+    final double[] result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -375,8 +373,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_Iterable_ok() {
-    Iterable<String> expected = Arrays.asList("Element");
-    Iterable<String> result = ArgChecker.notEmpty((Iterable<String>) expected, "name");
+    final Iterable<String> expected = Arrays.asList("Element");
+    final Iterable<String> result = ArgChecker.notEmpty((Iterable<String>) expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -397,8 +395,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_Collection_ok() {
-    List<String> expected = Arrays.asList("Element");
-    List<String> result = ArgChecker.notEmpty(expected, "name");
+    final List<String> expected = Arrays.asList("Element");
+    final List<String> result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -419,8 +417,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_notEmpty_Map_ok() {
-    SortedMap<String, String> expected = ImmutableSortedMap.of("Element", "Element");
-    SortedMap<String, String> result = ArgChecker.notEmpty(expected, "name");
+    final SortedMap<String, String> expected = ImmutableSortedMap.of("Element", "Element");
+    final SortedMap<String, String> result = ArgChecker.notEmpty(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
@@ -441,14 +439,14 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_noNulls_Array_ok() {
-    String[] expected = new String[] {"Element"};
-    String[] result = ArgChecker.noNulls(expected, "name");
+    final String[] expected = new String[] {"Element"};
+    final String[] result = ArgChecker.noNulls(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
   @Test
   public void test_noNulls_Array_ok_empty() {
-    Object[] array = new Object[] {};
+    final Object[] array = new Object[] {};
     ArgChecker.noNulls(array, "name");
   }
 
@@ -469,14 +467,14 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_noNulls_Iterable_ok() {
-    List<String> expected = Arrays.asList("Element");
-    List<String> result = ArgChecker.noNulls(expected, "name");
+    final List<String> expected = Arrays.asList("Element");
+    final List<String> result = ArgChecker.noNulls(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
   @Test
   public void test_noNulls_Iterable_ok_empty() {
-    Iterable<?> coll = Arrays.asList();
+    final Iterable<?> coll = Arrays.asList();
     ArgChecker.noNulls(coll, "name");
   }
 
@@ -497,14 +495,14 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_noNulls_Map_ok() {
-    ImmutableSortedMap<String, String> expected = ImmutableSortedMap.of("A", "B");
-    ImmutableSortedMap<String, String> result = ArgChecker.noNulls(expected, "name");
+    final ImmutableSortedMap<String, String> expected = ImmutableSortedMap.of("A", "B");
+    final ImmutableSortedMap<String, String> result = ArgChecker.noNulls(expected, "name");
     assertThat(result).isEqualTo(expected);
   }
 
   @Test
   public void test_noNulls_Map_ok_empty() {
-    Map<Object, Object> map = new HashMap<>();
+    final Map<Object, Object> map = new HashMap<>();
     ArgChecker.noNulls(map, "name");
   }
 
@@ -517,7 +515,7 @@ public class ArgCheckerTest {
 
   @Test
   public void test_noNulls_Map_nullKey() {
-    Map<Object, Object> map = new HashMap<>();
+    final Map<Object, Object> map = new HashMap<>();
     map.put("A", "B");
     map.put(null, "Z");
     assertThatIllegalArgumentException()
@@ -527,7 +525,7 @@ public class ArgCheckerTest {
 
   @Test
   public void test_noNulls_Map_nullValue() {
-    Map<Object, Object> map = new HashMap<>();
+    final Map<Object, Object> map = new HashMap<>();
     map.put("A", "B");
     map.put("Z", null);
     assertThatIllegalArgumentException()
@@ -547,7 +545,6 @@ public class ArgCheckerTest {
     assertThatIllegalArgumentException()
         .isThrownBy(() -> ArgChecker.notNegative(-1, "name"))
         .withMessageMatching(".*'name'.*negative.*");
-    ;
   }
 
   @Test
@@ -706,10 +703,10 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_double_inRange() {
-    double low = 0d;
-    double mid = 0.5d;
-    double high = 1d;
-    double small = 0.00000000001d;
+    final double low = 0d;
+    final double mid = 0.5d;
+    final double high = 1d;
+    final double small = 0.00000000001d;
     assertThat(ArgChecker.inRange(mid, low, high, "name")).isEqualTo(mid);
     assertThat(ArgChecker.inRange(low, low, high, "name")).isEqualTo(low);
     assertThat(ArgChecker.inRange(high - small, low, high, "name")).isEqualTo(high - small);
@@ -725,9 +722,9 @@ public class ArgCheckerTest {
 
   @Test
   public void test_double_inRange_outOfRange() {
-    double low = 0d;
-    double high = 1d;
-    double small = 0.00000000001d;
+    final double low = 0d;
+    final double high = 1d;
+    final double small = 0.00000000001d;
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.inRange(low - small, low, high, "name"));
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.inRange(high, low, high, "name"));
 
@@ -740,9 +737,9 @@ public class ArgCheckerTest {
 
   @Test
   public void test_int_inRange() {
-    int low = 0;
-    int mid = 1;
-    int high = 2;
+    final int low = 0;
+    final int mid = 1;
+    final int high = 2;
     assertThat(ArgChecker.inRange(mid, low, high, "name")).isEqualTo(mid);
     assertThat(ArgChecker.inRange(low, low, high, "name")).isEqualTo(low);
 
@@ -755,8 +752,8 @@ public class ArgCheckerTest {
 
   @Test
   public void test_int_inRange_outOfRange() {
-    int low = 0;
-    int high = 1;
+    final int low = 0;
+    final int high = 1;
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.inRange(low - 1, low, high, "name"));
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.inRange(high, low, high, "name"));
 
@@ -777,58 +774,58 @@ public class ArgCheckerTest {
   //-----------------------------------------------------------------------
   @Test
   public void test_double_noDuplicates() {
-    double[] values = {0d, 1d, 10d, 5d};
+    final double[] values = {0d, 1d, 10d, 5d};
     assertThat(ArgChecker.noDuplicates(values, "name")).containsExactly(values);
   }
 
   @Test
   public void test_double_noDuplicates_NaN() {
-    double[] values = {0d, 1d, 10d, Double.NaN};
+    final double[] values = {0d, 1d, 10d, Double.NaN};
     assertThat(ArgChecker.noDuplicates(values, "name")).containsExactly(values);
   }
 
   @Test
   public void test_double_noDuplicates_hasDuplicates() {
-    double[] values = {0d, 1d, 10d, 5d, 1d};
+    final double[] values = {0d, 1d, 10d, 5d, 1d};
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.noDuplicates(values, "name"));
   }
 
   @Test
   public void test_double_noDuplicatesSorted() {
-    double[] values = {0d, 1d, 5d, 10d};
+    final double[] values = {0d, 1d, 5d, 10d};
     assertThat(ArgChecker.noDuplicatesSorted(values, "name")).containsExactly(values);
   }
 
   @Test
   public void test_double_noDuplicatesSorted_Nan() {
-    double[] values = {0d, 1d, 5d, Double.NaN, 10d};
+    final double[] values = {0d, 1d, 5d, Double.NaN, 10d};
     assertThat(ArgChecker.noDuplicatesSorted(values, "name")).containsExactly(values);
   }
 
   @Test
   public void test_double_noDuplicatesSorted_hasDuplicates() {
-    double[] values = {0d, 1d, 5d, 5d, 10d};
+    final double[] values = {0d, 1d, 5d, 5d, 10d};
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.noDuplicatesSorted(values, "name"));
   }
 
   @Test
   public void test_double_noDuplicatesSorted_notSorted() {
-    double[] values = {0d, 1d, 5d, 10d, 4d};
+    final double[] values = {0d, 1d, 5d, 10d, 4d};
     assertThatIllegalArgumentException().isThrownBy(() -> ArgChecker.noDuplicatesSorted(values, "name"));
   }
 
   //-------------------------------------------------------------------------
   @Test
   public void test_inOrderNotEqual_true() {
-    LocalDate a = LocalDate.of(2011, 7, 2);
-    LocalDate b = LocalDate.of(2011, 7, 3);
+    final LocalDate a = LocalDate.of(2011, 7, 2);
+    final LocalDate b = LocalDate.of(2011, 7, 3);
     ArgChecker.inOrderNotEqual(a, b, "a", "b");
   }
 
   @Test
   public void test_inOrderNotEqual_false_invalidOrder() {
-    LocalDate a = LocalDate.of(2011, 7, 2);
-    LocalDate b = LocalDate.of(2011, 7, 3);
+    final LocalDate a = LocalDate.of(2011, 7, 2);
+    final LocalDate b = LocalDate.of(2011, 7, 3);
     assertThatIllegalArgumentException()
         .isThrownBy(() -> ArgChecker.inOrderNotEqual(b, a, "a", "b"))
         .withMessageMatching(".*a.* [<] .*b.*");
@@ -836,7 +833,7 @@ public class ArgCheckerTest {
 
   @Test
   public void test_inOrderNotEqual_false_equal() {
-    LocalDate a = LocalDate.of(2011, 7, 3);
+    final LocalDate a = LocalDate.of(2011, 7, 3);
     assertThatIllegalArgumentException()
         .isThrownBy(() -> ArgChecker.inOrderNotEqual(a, a, "a", "b"))
         .withMessageMatching(".*a.* [<] .*b.*");
@@ -845,8 +842,8 @@ public class ArgCheckerTest {
   //-------------------------------------------------------------------------
   @Test
   public void test_inOrderOrEqual_true() {
-    LocalDate a = LocalDate.of(2011, 7, 2);
-    LocalDate b = LocalDate.of(2011, 7, 3);
+    final LocalDate a = LocalDate.of(2011, 7, 2);
+    final LocalDate b = LocalDate.of(2011, 7, 3);
     ArgChecker.inOrderOrEqual(a, b, "a", "b");
     ArgChecker.inOrderOrEqual(a, a, "a", "b");
     ArgChecker.inOrderOrEqual(b, b, "a", "b");
@@ -854,8 +851,8 @@ public class ArgCheckerTest {
 
   @Test
   public void test_inOrderOrEqual_false() {
-    LocalDate a = LocalDate.of(2011, 7, 3);
-    LocalDate b = LocalDate.of(2011, 7, 2);
+    final LocalDate a = LocalDate.of(2011, 7, 3);
+    final LocalDate b = LocalDate.of(2011, 7, 2);
     assertThatIllegalArgumentException()
         .isThrownBy(() -> ArgChecker.inOrderOrEqual(a, b, "a", "b"))
         .withMessageMatching(".*a.* [<][=] .*b.*");

@@ -5,15 +5,15 @@
  */
 package com.opengamma.strata.collect;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.math.DoubleMath;
+
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.math.DoubleMath;
 
 /**
  * Contains utility methods for checking inputs to methods.
@@ -49,11 +49,11 @@ public final class ArgChecker {
    * <p>
    * It is strongly recommended to pass an additional message argument using
    * {@link #isTrue(boolean, String)}.
-   * 
+   *
    * @param validIfTrue  a boolean resulting from testing an argument
    * @throws IllegalArgumentException if the test value is false
    */
-  public static void isTrue(boolean validIfTrue) {
+  public static void isTrue(final boolean validIfTrue) {
     // return void, not the argument, as no need to check a boolean method argument
     if (!validIfTrue) {
       throw new IllegalArgumentException("Invalid argument, expression must be true");
@@ -69,12 +69,12 @@ public final class ArgChecker {
    * <pre>
    *  ArgChecker.isTrue(collection.contains("value"), "Collection must contain 'value'");
    * </pre>
-   * 
+   *
    * @param validIfTrue  a boolean resulting from testing an argument
    * @param message  the error message, not null
    * @throws IllegalArgumentException if the test value is false
    */
-  public static void isTrue(boolean validIfTrue, String message) {
+  public static void isTrue(final boolean validIfTrue, final String message) {
     // return void, not the argument, as no need to check a boolean method argument
     if (!validIfTrue) {
       throw new IllegalArgumentException(message);
@@ -100,13 +100,13 @@ public final class ArgChecker {
    * If there are too many arguments, then the excess arguments are appended to the
    * end of the message. No attempt is made to format the arguments.
    * See {@link Messages#format(String, Object...)} for more details.
-   * 
+   *
    * @param validIfTrue  a boolean resulting from testing an argument
    * @param message  the error message with {} placeholders, not null
    * @param arg  the message arguments
    * @throws IllegalArgumentException if the test value is false
    */
-  public static void isTrue(boolean validIfTrue, String message, Object... arg) {
+  public static void isTrue(final boolean validIfTrue, final String message, final Object... arg) {
     // return void, not the argument, as no need to check a boolean method argument
     if (!validIfTrue) {
       throw new IllegalArgumentException(Messages.format(message, arg));
@@ -129,13 +129,13 @@ public final class ArgChecker {
    * The message is produced using a template that contains zero or one "{}" placeholders.
    * The placeholder, if present, is replaced by the argument.
    * If there is no placeholder, the argument is appended to the end of the message.
-   * 
+   *
    * @param validIfTrue  a boolean resulting from testing an argument
    * @param message  the error message with {} placeholders, not null
    * @param arg  the message argument
    * @throws IllegalArgumentException if the test value is false
    */
-  public static void isTrue(boolean validIfTrue, String message, long arg) {
+  public static void isTrue(final boolean validIfTrue, final String message, final long arg) {
     // return void, not the argument, as no need to check a boolean method argument
     if (!validIfTrue) {
       throw new IllegalArgumentException(Messages.format(message, arg));
@@ -158,13 +158,13 @@ public final class ArgChecker {
    * The message is produced using a template that contains zero or one "{}" placeholders.
    * The placeholder, if present, is replaced by the argument.
    * If there is no placeholder, the argument is appended to the end of the message.
-   * 
+   *
    * @param validIfTrue  a boolean resulting from testing an argument
    * @param message  the error message with {} placeholders, not null
    * @param arg  the message argument
    * @throws IllegalArgumentException if the test value is false
    */
-  public static void isTrue(boolean validIfTrue, String message, double arg) {
+  public static void isTrue(final boolean validIfTrue, final String message, final double arg) {
     // return void, not the argument, as no need to check a boolean method argument
     if (!validIfTrue) {
       throw new IllegalArgumentException(Messages.format(message, arg));
@@ -183,12 +183,12 @@ public final class ArgChecker {
    * <p>
    * This returns {@code void}, and not the value being checked, as there is
    * never a good reason to validate a boolean argument value.
-   * 
+   *
    * @param validIfFalse  a boolean resulting from testing an argument
    * @param message  the error message, not null
    * @throws IllegalArgumentException if the test value is true
    */
-  public static void isFalse(boolean validIfFalse, String message) {
+  public static void isFalse(final boolean validIfFalse, final String message) {
     // return void, not the argument, as no need to check a boolean method argument
     if (validIfFalse) {
       throw new IllegalArgumentException(message);
@@ -214,13 +214,13 @@ public final class ArgChecker {
    * If there are too many arguments, then the excess arguments are appended to the
    * end of the message. No attempt is made to format the arguments.
    * See {@link Messages#format(String, Object...)} for more details.
-   * 
+   *
    * @param validIfFalse  a boolean resulting from testing an argument
    * @param message  the error message with {} placeholders, not null
    * @param arg  the message arguments, not null
    * @throws IllegalArgumentException if the test value is true
    */
-  public static void isFalse(boolean validIfFalse, String message, Object... arg) {
+  public static void isFalse(final boolean validIfFalse, final String message, final Object... arg) {
     // return void, not the argument, as no need to check a boolean method argument
     if (validIfFalse) {
       throw new IllegalArgumentException(Messages.format(message, arg));
@@ -236,14 +236,14 @@ public final class ArgChecker {
    * <pre>
    *  this.name = ArgChecker.notNull(name, "name");
    * </pre>
-   * 
+   *
    * @param <T>  the type of the input argument reflected in the result
    * @param argument  the argument to check, null throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null
    */
-  public static <T> T notNull(T argument, String name) {
+  public static <T> T notNull(final T argument, final String name) {
     if (argument == null) {
       throw new IllegalArgumentException(notNullMsg(name));
     }
@@ -251,7 +251,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notNullMsg(String name) {
+  private static String notNullMsg(final String name) {
     return "Argument '" + name + "' must not be null";
   }
 
@@ -266,13 +266,13 @@ public final class ArgChecker {
    *    .map(ArgChecker::notNullItem)
    *    ...
    * </pre>
-   * 
+   *
    * @param <T>  the type of the input argument reflected in the result
    * @param argument  the argument to check, null throws an exception
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null
    */
-  public static <T> T notNullItem(T argument) {
+  public static <T> T notNullItem(final T argument) {
     if (argument == null) {
       throw new IllegalArgumentException("Argument array/collection/map must not contain null");
     }
@@ -289,14 +289,14 @@ public final class ArgChecker {
    * <pre>
    *  this.name = ArgChecker.matches(REGEX_NAME, name, "name");
    * </pre>
-   * 
+   *
    * @param pattern  the pattern to check against, not null
    * @param argument  the argument to check, null throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static String matches(Pattern pattern, String argument, String name) {
+  public static String matches(final Pattern pattern, final String argument, final String name) {
     notNull(pattern, "pattern");
     notNull(argument, name);
     if (!pattern.matcher(argument).matches()) {
@@ -306,7 +306,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String matchesMsg(Pattern pattern, String name, String value) {
+  private static String matchesMsg(final Pattern pattern, final String name, final String value) {
     return "Argument '" + name + "' with value '" + value + "' must match pattern: " + pattern;
   }
 
@@ -320,7 +320,7 @@ public final class ArgChecker {
    * <pre>
    *  this.name = ArgChecker.matches(REGEX_NAME, 1, Integer.MAX_VALUE, name, "name", "[A-Z]+");
    * </pre>
-   * 
+   *
    * @param matcher  the matcher to check against, not null
    * @param minLength  the minimum length to allow
    * @param maxLength  the minimum length to allow
@@ -331,12 +331,12 @@ public final class ArgChecker {
    * @throws IllegalArgumentException if the input is null or empty
    */
   public static String matches(
-      CharMatcher matcher,
-      int minLength,
-      int maxLength,
-      String argument,
-      String name,
-      String equivalentRegex) {
+      final CharMatcher matcher,
+      final int minLength,
+      final int maxLength,
+      final String argument,
+      final String name,
+      final String equivalentRegex) {
 
     notNull(matcher, "pattern");
     notNull(argument, name);
@@ -347,7 +347,8 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String matchesMsg(CharMatcher matcher, String name, String value, String equivalentRegex) {
+  private static String matchesMsg(final CharMatcher matcher, final String name, final String value,
+      final String equivalentRegex) {
     return "Argument '" + name + "' with value '" + value + "' must match pattern: " + equivalentRegex;
   }
 
@@ -365,13 +366,13 @@ public final class ArgChecker {
    * <p>
    * The argument is trimmed using {@link String#trim()} to determine if it is empty.
    * The result is the original argument, not the trimmed one.
-   * 
+   *
    * @param argument  the argument to check, null or blank throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or blank
    */
-  public static String notBlank(String argument, String name) {
+  public static String notBlank(final String argument, final String name) {
     notNull(argument, name);
     if (argument.trim().isEmpty()) {
       throw new IllegalArgumentException(notBlankMsg(name));
@@ -380,7 +381,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notBlankMsg(String name) {
+  private static String notBlankMsg(final String name) {
     return "Argument '" + name + "' must not be blank";
   }
 
@@ -395,13 +396,13 @@ public final class ArgChecker {
    * <pre>
    *  this.name = ArgChecker.notEmpty(name, "name");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check, null or empty throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static String notEmpty(String argument, String name) {
+  public static String notEmpty(final String argument, final String name) {
     notNull(argument, name);
     if (argument.isEmpty()) {
       throw new IllegalArgumentException(notEmptyMsg(name));
@@ -410,7 +411,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notEmptyMsg(String name) {
+  private static String notEmptyMsg(final String name) {
     return "Argument '" + name + "' must not be empty";
   }
 
@@ -423,14 +424,14 @@ public final class ArgChecker {
    * <pre>
    *  this.names = ArgChecker.notEmpty(names, "names");
    * </pre>
-   * 
+   *
    * @param <T>  the type of the input array reflected in the result
    * @param argument  the argument to check, null or empty throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static <T> T[] notEmpty(T[] argument, String name) {
+  public static <T> T[] notEmpty(final T[] argument, final String name) {
     notNull(argument, name);
     if (argument.length == 0) {
       throw new IllegalArgumentException(notEmptyArrayMsg(name));
@@ -439,7 +440,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notEmptyArrayMsg(String name) {
+  private static String notEmptyArrayMsg(final String name) {
     return "Argument array '" + name + "' must not be empty";
   }
 
@@ -452,13 +453,13 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.notEmpty(values, "values");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check, null or empty throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static int[] notEmpty(int[] argument, String name) {
+  public static int[] notEmpty(final int[] argument, final String name) {
     notNull(argument, name);
     if (argument.length == 0) {
       throw new IllegalArgumentException(notEmptyArrayMsg(name));
@@ -475,13 +476,13 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.notEmpty(values, "values");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check, null or empty throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static long[] notEmpty(long[] argument, String name) {
+  public static long[] notEmpty(final long[] argument, final String name) {
     notNull(argument, name);
     if (argument.length == 0) {
       throw new IllegalArgumentException(notEmptyArrayMsg(name));
@@ -498,13 +499,13 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.notEmpty(values, "values");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check, null or empty throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static double[] notEmpty(double[] argument, String name) {
+  public static double[] notEmpty(final double[] argument, final String name) {
     notNull(argument, name);
     if (argument.length == 0) {
       throw new IllegalArgumentException(notEmptyArrayMsg(name));
@@ -521,7 +522,7 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.notEmpty(values, "values");
    * </pre>
-   * 
+   *
    * @param <T>  the element type of the input iterable reflected in the result
    * @param <I>  the type of the input iterable, reflected in the result
    * @param argument  the argument to check, null or empty throws an exception
@@ -529,7 +530,7 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static <T, I extends Iterable<T>> I notEmpty(I argument, String name) {
+  public static <T, I extends Iterable<T>> I notEmpty(final I argument, final String name) {
     notNull(argument, name);
     if (!argument.iterator().hasNext()) {
       throw new IllegalArgumentException(notEmptyIterableMsg(name));
@@ -538,7 +539,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notEmptyIterableMsg(String name) {
+  private static String notEmptyIterableMsg(final String name) {
     return "Argument iterable '" + name + "' must not be empty";
   }
 
@@ -559,7 +560,7 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static <T, C extends Collection<T>> C notEmpty(C argument, String name) {
+  public static <T, C extends Collection<T>> C notEmpty(final C argument, final String name) {
     notNull(argument, name);
     if (argument.isEmpty()) {
       throw new IllegalArgumentException(notEmptyCollectionMsg(name));
@@ -568,7 +569,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notEmptyCollectionMsg(String name) {
+  private static String notEmptyCollectionMsg(final String name) {
     return "Argument collection '" + name + "' must not be empty";
   }
 
@@ -581,7 +582,7 @@ public final class ArgChecker {
    * <pre>
    *  this.keyValues = ArgChecker.notEmpty(keyValues, "keyValues");
    * </pre>
-   * 
+   *
    * @param <K>  the key type of the input map key, reflected in the result
    * @param <V>  the value type of the input map value, reflected in the result
    * @param <M>  the type of the input map, reflected in the result
@@ -590,7 +591,7 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or empty
    */
-  public static <K, V, M extends Map<K, V>> M notEmpty(M argument, String name) {
+  public static <K, V, M extends Map<K, V>> M notEmpty(final M argument, final String name) {
     notNull(argument, name);
     if (argument.isEmpty()) {
       throw new IllegalArgumentException(notEmptyMapMsg(name));
@@ -599,7 +600,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notEmptyMapMsg(String name) {
+  private static String notEmptyMapMsg(final String name) {
     return "Argument map '" + name + "' must not be empty";
   }
 
@@ -612,14 +613,14 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.noNulls(values, "values");
    * </pre>
-   * 
+   *
    * @param <T>  the type of the input array reflected in the result
    * @param argument  the argument to check, null or contains null throws an exception
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or contains nulls
    */
-  public static <T> T[] noNulls(T[] argument, String name) {
+  public static <T> T[] noNulls(final T[] argument, final String name) {
     notNull(argument, name);
     for (int i = 0; i < argument.length; i++) {
       if (argument[i] == null) {
@@ -637,7 +638,7 @@ public final class ArgChecker {
    * <pre>
    *  this.values = ArgChecker.noNulls(values, "values");
    * </pre>
-   * 
+   *
    * @param <T>  the element type of the input iterable reflected in the result
    * @param <I>  the type of the input iterable, reflected in the result
    * @param argument  the argument to check, null or contains null throws an exception
@@ -645,9 +646,9 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or contains nulls
    */
-  public static <T, I extends Iterable<T>> I noNulls(I argument, String name) {
+  public static <T, I extends Iterable<T>> I noNulls(final I argument, final String name) {
     notNull(argument, name);
-    for (Object obj : argument) {
+    for (final Object obj : argument) {
       if (obj == null) {
         throw new IllegalArgumentException("Argument iterable '" + name + "' must not contain null");
       }
@@ -663,7 +664,7 @@ public final class ArgChecker {
    * <pre>
    *  this.keyValues = ArgChecker.noNulls(keyValues, "keyValues");
    * </pre>
-   * 
+   *
    * @param <K>  the key type of the input map key, reflected in the result
    * @param <V>  the value type of the input map value, reflected in the result
    * @param <M>  the type of the input map, reflected in the result
@@ -672,9 +673,9 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or contains nulls
    */
-  public static <K, V, M extends Map<K, V>> M noNulls(M argument, String name) {
+  public static <K, V, M extends Map<K, V>> M noNulls(final M argument, final String name) {
     notNull(argument, name);
-    for (Entry<K, V> entry : argument.entrySet()) {
+    for (final Entry<K, V> entry : argument.entrySet()) {
       if (entry.getKey() == null) {
         throw new IllegalArgumentException("Argument map '" + name + "' must not contain a null key");
       }
@@ -703,11 +704,11 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null or contains duplicate values
    */
-  public static double[] noDuplicates(double[] argument, String name) {
+  public static double[] noDuplicates(final double[] argument, final String name) {
     notNull(argument, name);
     if (argument.length > 1) {
-      Set<Double> seen = new LinkedHashSet<>();
-      for (double v : argument) {
+      final Set<Double> seen = new LinkedHashSet<>();
+      for (final double v : argument) {
         if (!seen.add(v)) {
           throw new IllegalArgumentException(noDuplicatesArrayMsg(name));
         }
@@ -717,7 +718,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String noDuplicatesArrayMsg(String name) {
+  private static String noDuplicatesArrayMsg(final String name) {
     return "Argument array '" + name + "' must not contain duplicates";
   }
 
@@ -735,7 +736,7 @@ public final class ArgChecker {
    * @return the input {@code argument}, not null
    * @throws IllegalArgumentException if the input is null, unsorted, or contains duplicate values
    */
-  public static double[] noDuplicatesSorted(double[] argument, String name) {
+  public static double[] noDuplicatesSorted(final double[] argument, final String name) {
     notNull(argument, name);
     for (int i = 1; i < argument.length; i++) {
       if (argument[i] == argument[i - 1]) {
@@ -748,7 +749,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String noDuplicatesSortedArrayMsg(String name) {
+  private static String noDuplicatesSortedArrayMsg(final String name) {
     return "Argument array '" + name + "' must be sorted and not contain duplicates";
   }
 
@@ -761,13 +762,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegative(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative
    */
-  public static int notNegative(int argument, String name) {
+  public static int notNegative(final int argument, final String name) {
     if (argument < 0) {
       throw new IllegalArgumentException(notNegativeMsg(name));
     }
@@ -775,7 +776,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notNegativeMsg(String name) {
+  private static String notNegativeMsg(final String name) {
     return "Argument '" + name + "' must not be negative";
   }
 
@@ -787,13 +788,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegative(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative
    */
-  public static long notNegative(long argument, String name) {
+  public static long notNegative(final long argument, final String name) {
     if (argument < 0) {
       throw new IllegalArgumentException(notNegativeMsg(name));
     }
@@ -808,13 +809,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegative(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative
    */
-  public static double notNegative(double argument, String name) {
+  public static double notNegative(final double argument, final String name) {
     if (argument < 0) {
       throw new IllegalArgumentException(notNegativeMsg(name));
     }
@@ -836,19 +837,24 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is NaN
    */
-  public static double notNaN(double argument, String name) {
+  public static double notNaN(final double argument, final String name) {
     if (Double.isNaN(argument)) {
       throw new IllegalArgumentException(notNaNMsg(name));
     }
     return argument;
   }
 
+  public static double notNegativeOrNaN(final double argument, final String name) {
+    return notNegative(notNaN(argument, name), name);
+  }
+
   // extracted to aid inlining performance
-  private static String notNaNMsg(String name) {
+  private static String notNaNMsg(final String name) {
     return "Argument '" + name + "' must not be NaN";
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Checks that the argument is not negative or zero.
    * <p>
@@ -857,13 +863,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegativeOrZero(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative or zero
    */
-  public static int notNegativeOrZero(int argument, String name) {
+  public static int notNegativeOrZero(final int argument, final String name) {
     if (argument <= 0) {
       throw new IllegalArgumentException(notNegativeOrZeroMsg(name, argument));
     }
@@ -871,7 +877,7 @@ public final class ArgChecker {
   }
 
   // extracted to aid inlining performance
-  private static String notNegativeOrZeroMsg(String name, double argument) {
+  private static String notNegativeOrZeroMsg(final String name, final double argument) {
     return "Argument '" + name + "' must not be negative or zero but has value " + argument;
   }
 
@@ -883,13 +889,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegativeOrZero(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative or zero
    */
-  public static long notNegativeOrZero(long argument, String name) {
+  public static long notNegativeOrZero(final long argument, final String name) {
     if (argument <= 0) {
       throw new IllegalArgumentException(notNegativeOrZeroMsg(name, argument));
     }
@@ -904,13 +910,13 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegativeOrZero(amount, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the argument to check
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the input is negative or zero
    */
-  public static double notNegativeOrZero(double argument, String name) {
+  public static double notNegativeOrZero(final double argument, final String name) {
     if (argument <= 0) {
       throw new IllegalArgumentException(notNegativeOrZeroMsg(name, argument));
     }
@@ -926,14 +932,14 @@ public final class ArgChecker {
    * <pre>
    *  this.amount = ArgChecker.notNegativeOrZero(amount, 0.0001d, "amount");
    * </pre>
-   * 
+   *
    * @param argument  the value to check
    * @param tolerance  the tolerance to use for zero
    * @param name  the name of the argument to use in the error message, not null
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the absolute value of the argument is less than eps
    */
-  public static double notNegativeOrZero(double argument, double tolerance, String name) {
+  public static double notNegativeOrZero(final double argument, final double tolerance, final String name) {
     if (DoubleMath.fuzzyEquals(argument, 0, tolerance)) {
       throw new IllegalArgumentException("Argument '" + name + "' must not be zero");
     }
@@ -959,7 +965,7 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is zero
    */
-  public static double notZero(double argument, String name) {
+  public static double notZero(final double argument, final String name) {
     if (argument == 0d || argument == -0d) {
       throw new IllegalArgumentException("Argument '" + name + "' must not be zero");
     }
@@ -982,7 +988,7 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the absolute value of the argument is less than the tolerance
    */
-  public static double notZero(double argument, double tolerance, String name) {
+  public static double notZero(final double argument, final double tolerance, final String name) {
     if (DoubleMath.fuzzyEquals(argument, 0d, tolerance)) {
       throw new IllegalArgumentException("Argument '" + name + "' must not be zero");
     }
@@ -1007,7 +1013,8 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static double inRange(double argument, double lowInclusive, double highExclusive, String name) {
+  public static double inRange(
+      final double argument, final double lowInclusive, final double highExclusive, final String name) {
     if (argument < lowInclusive || argument >= highExclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} <= '{}' < {}, but found {}", lowInclusive, name, highExclusive, argument));
@@ -1031,7 +1038,8 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static double inRangeInclusive(double argument, double lowInclusive, double highInclusive, String name) {
+  public static double inRangeInclusive(final double argument, final double lowInclusive, final double highInclusive,
+      final String name) {
     if (argument < lowInclusive || argument > highInclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} <= '{}' <= {}, but found {}", lowInclusive, name, highInclusive, argument));
@@ -1055,7 +1063,8 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static double inRangeExclusive(double argument, double lowExclusive, double highExclusive, String name) {
+  public static double inRangeExclusive(final double argument, final double lowExclusive, final double highExclusive,
+      final String name) {
     if (argument <= lowExclusive || argument >= highExclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} < '{}' < {}, but found {}", lowExclusive, name, highExclusive, argument));
@@ -1081,7 +1090,7 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static int inRange(int argument, int lowInclusive, int highExclusive, String name) {
+  public static int inRange(final int argument, final int lowInclusive, final int highExclusive, final String name) {
     if (argument < lowInclusive || argument >= highExclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} <= '{}' < {}, but found {}", lowInclusive, name, highExclusive, argument));
@@ -1105,7 +1114,8 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static int inRangeInclusive(int argument, int lowInclusive, int highInclusive, String name) {
+  public static int inRangeInclusive(final int argument, final int lowInclusive, final int highInclusive,
+      final String name) {
     if (argument < lowInclusive || argument > highInclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} <= '{}' <= {}, but found {}", lowInclusive, name, highInclusive, argument));
@@ -1129,7 +1139,8 @@ public final class ArgChecker {
    * @return the input {@code argument}
    * @throws IllegalArgumentException if the argument is outside the valid range
    */
-  public static int inRangeExclusive(int argument, int lowExclusive, int highExclusive, String name) {
+  public static int inRangeExclusive(final int argument, final int lowExclusive, final int highExclusive,
+      final String name) {
     if (argument <= lowExclusive || argument >= highExclusive) {
       throw new IllegalArgumentException(
           Messages.format("Expected {} < '{}' < {}, but found {}", lowExclusive, name, highExclusive, argument));
@@ -1151,7 +1162,8 @@ public final class ArgChecker {
    * @param name2  the second argument name, not null
    * @throws IllegalArgumentException if either input is null or they are not in order
    */
-  public static <T> void inOrderNotEqual(Comparable<? super T> obj1, T obj2, String name1, String name2) {
+  public static <T> void inOrderNotEqual(
+      final Comparable<? super T> obj1, final T obj2, final String name1, final String name2) {
     notNull(obj1, name1);
     notNull(obj2, name2);
     if (obj1.compareTo(obj2) >= 0) {
@@ -1172,7 +1184,8 @@ public final class ArgChecker {
    * @param name2  the second argument name, not null
    * @throws IllegalArgumentException if either input is null or they are not in order
    */
-  public static <T> void inOrderOrEqual(Comparable<? super T> obj1, T obj2, String name1, String name2) {
+  public static <T> void inOrderOrEqual(final Comparable<? super T> obj1, final T obj2, final String name1,
+      final String name2) {
     notNull(obj1, name1);
     notNull(obj2, name2);
     if (obj1.compareTo(obj2) > 0) {
