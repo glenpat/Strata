@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.product;
 
-import org.joda.convert.FromString;
-
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.collect.TypedString;
 import com.opengamma.strata.product.bond.Bill;
@@ -26,6 +24,7 @@ import com.opengamma.strata.product.fra.Fra;
 import com.opengamma.strata.product.fx.FxNdf;
 import com.opengamma.strata.product.fx.FxSingle;
 import com.opengamma.strata.product.fx.FxSwap;
+import com.opengamma.strata.product.fxopt.FxDigitalOption;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.FxVanillaOption;
 import com.opengamma.strata.product.index.IborFuture;
@@ -34,6 +33,7 @@ import com.opengamma.strata.product.index.OvernightFuture;
 import com.opengamma.strata.product.payment.BulletPayment;
 import com.opengamma.strata.product.swap.Swap;
 import com.opengamma.strata.product.swaption.Swaption;
+import org.joda.convert.FromString;
 
 /**
  * The type of a portfolio item.
@@ -90,7 +90,13 @@ public final class ProductType
   /**
    * A {@link FxSingleBarrierOption}.
    */
-  public static final ProductType FX_SINGLE_BARRIER_OPTION = ProductType.of("FxSingleBarrierOption", "FX Single Barrier Option");
+  public static final ProductType FX_SINGLE_BARRIER_OPTION =
+      ProductType.of("FxSingleBarrierOption", "FX Single Barrier Option");
+  /**
+   * A {@link FxDigitalOption}.
+   */
+  public static final ProductType FX_DIGITAL_OPTION =
+      ProductType.of("FxDigitalOption", "FX Digital Option");
   /**
    * A {@link FxSingle}.
    */
@@ -165,6 +171,7 @@ public final class ProductType
   private final String description;
 
   //-------------------------------------------------------------------------
+
   /**
    * Obtains an instance from the specified name.
    * <p>
@@ -174,7 +181,7 @@ public final class ProductType
    * @return a type instance with the specified name
    */
   @FromString
-  public static ProductType of(String name) {
+  public static ProductType of(final String name) {
     return new ProductType(name, name);
   }
 
@@ -187,17 +194,17 @@ public final class ProductType
    * @param description  the description
    * @return a type instance with the specified name
    */
-  private static ProductType of(String name, String description) {
+  private static ProductType of(final String name, final String description) {
     return new ProductType(name, description);
   }
 
   /**
    * Creates an instance.
-   * 
+   *
    * @param name  the name
    * @param description  the description
    */
-  private ProductType(String name, String description) {
+  private ProductType(final String name, final String description) {
     super(name);
     this.description = ArgChecker.notBlank(description, "description");
   }
@@ -208,7 +215,7 @@ public final class ProductType
    * @return the description
    */
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
 }
