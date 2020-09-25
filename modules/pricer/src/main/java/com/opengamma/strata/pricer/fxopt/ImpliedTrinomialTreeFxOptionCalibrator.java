@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import java.util.function.Function;
-
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.collect.ArgChecker;
@@ -14,7 +12,9 @@ import com.opengamma.strata.collect.tuple.DoublesPair;
 import com.opengamma.strata.pricer.DiscountFactors;
 import com.opengamma.strata.pricer.impl.volatility.local.ImpliedTrinomialTreeLocalVolatilityCalculator;
 import com.opengamma.strata.pricer.rate.RatesProvider;
-import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
+import com.opengamma.strata.product.fxopt.ResolvedFxOption;
+
+import java.util.function.Function;
 
 /**
  * Utilities to calibrate implied trinomial tree to Black volatilities of FX options.
@@ -43,7 +43,7 @@ public class ImpliedTrinomialTreeFxOptionCalibrator {
    * @return number of time steps
    */
   public int getNumberOfSteps() {
-    return nSteps;
+    return this.nSteps;
   }
 
   //-------------------------------------------------------------------------
@@ -59,12 +59,12 @@ public class ImpliedTrinomialTreeFxOptionCalibrator {
    * @return the trinomial tree data
    */
   public RecombiningTrinomialTreeData calibrateTrinomialTree(
-      ResolvedFxVanillaOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     double timeToExpiry = volatilities.relativeTime(option.getExpiry());
-    CurrencyPair currencyPair = option.getUnderlying().getCurrencyPair();
+    CurrencyPair currencyPair = option.getCurrencyPair();
     return calibrateTrinomialTree(timeToExpiry, currencyPair, ratesProvider, volatilities);
   }
 
@@ -117,7 +117,7 @@ public class ImpliedTrinomialTreeFxOptionCalibrator {
       }
     };
     ImpliedTrinomialTreeLocalVolatilityCalculator localVol =
-        new ImpliedTrinomialTreeLocalVolatilityCalculator(nSteps, timeToExpiry);
+        new ImpliedTrinomialTreeLocalVolatilityCalculator(this.nSteps, timeToExpiry);
     return localVol.calibrateImpliedVolatility(impliedVolSurface, todayFx, interestRate, dividendRate);
   }
 

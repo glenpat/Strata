@@ -5,6 +5,18 @@
  */
 package com.opengamma.strata.basics.currency;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.opengamma.strata.collect.Unchecked;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import static com.opengamma.strata.collect.Guavate.toImmutableSet;
 import static com.opengamma.strata.collect.TestHelper.assertJodaConvert;
 import static com.opengamma.strata.collect.TestHelper.assertSerialization;
@@ -12,19 +24,6 @@ import static com.opengamma.strata.collect.TestHelper.coverPrivateConstructor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-
-import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
-import java.util.Set;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.opengamma.strata.collect.Unchecked;
 
 /**
  * Test {@link Currency}.
@@ -278,8 +277,11 @@ public class CurrencyTest {
         .filter(ccy -> ccy.getCode().charAt(0) != 'X')
         .collect(toImmutableSet());
 
-    ImmutableSet<Currency> fields = Stream.of(Currency.class.getDeclaredFields())
-        .filter(field -> Modifier.isPublic(field.getModifiers()))
+    //  <PF>added Cryptos so the test wouldn't fail</PF>
+    ImmutableSet<Currency> fields = Stream.concat(
+        Stream.of(Currency.class.getDeclaredFields()),
+        Stream.of(Crypto.class.getDeclaredFields())
+    ).filter(field -> Modifier.isPublic(field.getModifiers()))
         .filter(field -> Modifier.isStatic(field.getModifiers()))
         .filter(field -> Modifier.isFinal(field.getModifiers()))
         .filter(field -> field.getType() == Currency.class)
