@@ -5,11 +5,6 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.math.DoubleMath;
 import com.opengamma.strata.basics.currency.Currency;
@@ -31,6 +26,11 @@ import com.opengamma.strata.product.fx.ResolvedFxSingle;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
 import com.opengamma.strata.product.option.SimpleConstantContinuousBarrier;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Pricer for FX barrier option products under implied trinomial tree.
@@ -89,7 +89,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
    * @return the calibrator
    */
   public ImpliedTrinomialTreeFxOptionCalibrator getCalibrator() {
-    return calibrator;
+    return this.calibrator;
   }
 
   //-------------------------------------------------------------------------
@@ -115,7 +115,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData treeData =
-        calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
     return price(option, ratesProvider, volatilities, treeData);
   }
 
@@ -166,7 +166,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData treeData =
-        calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
     return presentValue(option, ratesProvider, volatilities, treeData);
   }
 
@@ -216,7 +216,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData baseTreeData =
-        calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
     return presentValueSensitivityRates(option, ratesProvider, volatilities, baseTreeData);
   }
 
@@ -240,7 +240,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData baseTreeData) {
 
-    ArgChecker.isTrue(baseTreeData.getNumberOfSteps() == calibrator.getNumberOfSteps(),
+    ArgChecker.isTrue(baseTreeData.getNumberOfSteps() == this.calibrator.getNumberOfSteps(),
         "the number of steps mismatch between pricer and trinomial tree data");
     double shift = 1.0e-5;
     CurrencyAmount pvBase = presentValue(option, ratesProvider, volatilities, baseTreeData);
@@ -287,7 +287,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData treeData =
-        calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
     return currencyExposure(option, ratesProvider, volatilities, treeData);
   }
 
