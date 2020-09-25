@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import java.time.LocalDate;
-
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.currency.Payment;
@@ -16,8 +14,12 @@ import com.opengamma.strata.market.sensitivity.PointSensitivities;
 import com.opengamma.strata.market.sensitivity.PointSensitivityBuilder;
 import com.opengamma.strata.pricer.DiscountingPaymentPricer;
 import com.opengamma.strata.pricer.rate.RatesProvider;
+import com.opengamma.strata.product.fxopt.ResolvedFxOption;
+import com.opengamma.strata.product.fxopt.ResolvedFxOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
+
+import java.time.LocalDate;
 
 /**
  * Pricer for FX barrier option trades under implied trinomial tree.
@@ -71,14 +73,14 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
    * @return the present value of the trade
    */
   public MultiCurrencyAmount presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
-    CurrencyAmount pvProduct = productPricer.presentValue(product, ratesProvider, volatilities);
+    ResolvedFxOption product = trade.getProduct();
+    CurrencyAmount pvProduct = this.productPricer.presentValue(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
-    CurrencyAmount pvPremium = paymentPricer.presentValue(premium, ratesProvider);
+    CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
     return MultiCurrencyAmount.of(pvProduct, pvPremium);
   }
 
@@ -107,9 +109,9 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
 
     ResolvedFxSingleBarrierOption product = trade.getProduct();
     CurrencyParameterSensitivities sensProduct =
-        productPricer.presentValueSensitivityRates(product, ratesProvider, volatilities);
+        this.productPricer.presentValueSensitivityRates(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
-    PointSensitivityBuilder pvcsPremium = paymentPricer.presentValueSensitivity(premium, ratesProvider);
+    PointSensitivityBuilder pvcsPremium = this.paymentPricer.presentValueSensitivity(premium, ratesProvider);
     CurrencyParameterSensitivities sensPremium = ratesProvider.parameterSensitivity(pvcsPremium.build());
     return sensProduct.combinedWith(sensPremium);
   }
@@ -132,9 +134,9 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
       BlackFxOptionVolatilities volatilities) {
 
     Payment premium = trade.getPremium();
-    CurrencyAmount pvPremium = paymentPricer.presentValue(premium, ratesProvider);
+    CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
     ResolvedFxSingleBarrierOption product = trade.getProduct();
-    return productPricer.currencyExposure(product, ratesProvider, volatilities).plus(pvPremium);
+    return this.productPricer.currencyExposure(product, ratesProvider, volatilities).plus(pvPremium);
   }
 
   //-------------------------------------------------------------------------
