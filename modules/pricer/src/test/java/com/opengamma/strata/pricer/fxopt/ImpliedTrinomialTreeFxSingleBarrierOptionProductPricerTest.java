@@ -9,6 +9,7 @@ import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.currency.Payment;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.market.param.CurrencyParameterSensitivities;
 import com.opengamma.strata.pricer.DiscountingPaymentPricer;
 import com.opengamma.strata.pricer.fx.FxForwardRates;
@@ -17,6 +18,7 @@ import com.opengamma.strata.pricer.rate.ImmutableRatesProvider;
 import com.opengamma.strata.pricer.sensitivity.RatesFiniteDifferenceSensitivityCalculator;
 import com.opengamma.strata.product.common.LongShort;
 import com.opengamma.strata.product.fx.ResolvedFxSingle;
+import com.opengamma.strata.product.fxopt.ResolvedFxDigitalOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
@@ -130,7 +132,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
     final FxForwardRates fxForwardRates = rp.fxForwardRates(CurrencyPair.parse("EUR/USD"));
     final double fwdRate = fxForwardRates.rate(EUR, expiryDate);
 
-    final double strikeRate = 0.10;
+    final double strikeRate = fwdRate;
 
     final ResolvedFxSingle FX_PRODUCT =
         ResolvedFxSingle
@@ -148,6 +150,25 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .underlying(FX_PRODUCT_INV)
         .build();
 
+    final FxIndex fxIndex = FxIndex.of("EUR/USD-ECB");
+
+    final ResolvedFxDigitalOption upDigital = ResolvedFxDigitalOption.builder()
+        .payment(CurrencyAmount.of(USD, 1000_000_000D))
+        .index(fxIndex)
+        .strikePrice(strikeRate)
+        .expiry(expiryDateTime)
+        .barrierType(BarrierType.UP)
+        .longShort(LongShort.LONG)
+        .build();
+    final ResolvedFxDigitalOption downDigital = ResolvedFxDigitalOption.builder()
+        .payment(CurrencyAmount.of(USD, 1000_000_000D))
+        .index(fxIndex)
+        .strikePrice(strikeRate)
+        .expiry(expiryDateTime)
+        .barrierType(BarrierType.DOWN)
+        .longShort(LongShort.LONG)
+        .build();
+
     System.out.println("vanilla-----------");
     double callPrice = VANILLA_PRICER.price(call, rp, vols);
     double putPrice = VANILLA_PRICER.price(put, rp, vols);
@@ -163,6 +184,12 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
     double putPriceTri = pricer.price(put, rp, vols);
     System.out.println(callPriceTri);
     System.out.println(putPriceTri);
+
+    System.out.println("digital-----------");
+    double callPriceDigital = pricer.price(upDigital, rp, vols);
+    double putPriceDigital = pricer.price(downDigital, rp, vols);
+    System.out.println(callPriceDigital);
+    System.out.println(putPriceDigital);
 
     for (int i = 2; i < 50; i++) {
       final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer
