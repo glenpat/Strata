@@ -5,14 +5,6 @@
  */
 package com.opengamma.strata.pricer.fx;
 
-import static com.opengamma.strata.basics.currency.Currency.EUR;
-import static com.opengamma.strata.basics.currency.Currency.GBP;
-import static com.opengamma.strata.basics.currency.Currency.USD;
-import static com.opengamma.strata.basics.date.DayCounts.ACT_360;
-import static com.opengamma.strata.basics.date.DayCounts.ACT_ACT_ISDA;
-
-import java.time.LocalDate;
-
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.FxMatrix;
@@ -28,6 +20,14 @@ import com.opengamma.strata.market.curve.interpolator.CurveInterpolators;
 import com.opengamma.strata.pricer.datasets.RatesProviderDataSets;
 import com.opengamma.strata.pricer.rate.ImmutableRatesProvider;
 import com.opengamma.strata.pricer.rate.RatesProvider;
+
+import java.time.LocalDate;
+
+import static com.opengamma.strata.basics.currency.Currency.EUR;
+import static com.opengamma.strata.basics.currency.Currency.GBP;
+import static com.opengamma.strata.basics.currency.Currency.USD;
+import static com.opengamma.strata.basics.date.DayCounts.ACT_360;
+import static com.opengamma.strata.basics.date.DayCounts.ACT_ACT_ISDA;
 
 /**
  * Sets of market data used in FX tests.
@@ -52,8 +52,11 @@ public class RatesProviderFxDataSets {
 
   private static final CurveInterpolator INTERPOLATOR = CurveInterpolators.LINEAR;
   private static final DoubleArray USD_DSC_TIME = DoubleArray.of(0.0, 0.5, 1.0, 2.0, 5.0);
+  //  TODO: remove
   private static final DoubleArray USD_DSC_RATE = DoubleArray.of(0.0100, 0.0120, 0.0120, 0.0140, 0.0140);
+  //  private static final DoubleArray USD_DSC_RATE = DoubleArray.of(0, 0, 0, 0, 0);
   private static final DoubleArray USD_DSC_RATE_FLAT = DoubleArray.of(0.0110, 0.0110, 0.0110, 0.0110, 0.0110);
+  //  private static final DoubleArray USD_DSC_RATE_FLAT = DoubleArray.of(0, 0, 0, 0, 0);
   private static final CurveMetadata USD_DSC_METADATA = Curves.zeroRates("USD Dsc", ACT_360);
   private static final InterpolatedNodalCurve USD_DSC =
       InterpolatedNodalCurve.of(USD_DSC_METADATA, USD_DSC_TIME, USD_DSC_RATE, INTERPOLATOR);
@@ -65,7 +68,9 @@ public class RatesProviderFxDataSets {
 
   private static final DoubleArray EUR_DSC_TIME = DoubleArray.of(0.0, 0.5, 1.0, 2.0, 5.0);
   private static final DoubleArray EUR_DSC_RATE = DoubleArray.of(0.0150, 0.0125, 0.0150, 0.0175, 0.0150);
+  //  private static final DoubleArray EUR_DSC_RATE = DoubleArray.of(0, 0, 0, 0, 0);
   private static final DoubleArray EUR_DSC_RATE_FLAT = DoubleArray.of(0.0150, 0.0150, 0.0150, 0.0150, 0.0150);
+  //  private static final DoubleArray EUR_DSC_RATE_FLAT = DoubleArray.of(0, 0, 0, 0, 0);
   private static final CurveMetadata EUR_DSC_METADATA = Curves.zeroRates("EUR Dsc", ACT_360);
   private static final InterpolatedNodalCurve EUR_DSC =
       InterpolatedNodalCurve.of(EUR_DSC_METADATA, EUR_DSC_TIME, EUR_DSC_RATE, INTERPOLATOR);
