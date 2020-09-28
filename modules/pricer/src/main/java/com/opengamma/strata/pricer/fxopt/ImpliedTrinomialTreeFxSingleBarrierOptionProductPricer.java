@@ -24,6 +24,7 @@ import com.opengamma.strata.pricer.impl.tree.TrinomialTree;
 import com.opengamma.strata.pricer.rate.ImmutableRatesProvider;
 import com.opengamma.strata.pricer.rate.RatesProvider;
 import com.opengamma.strata.product.fx.ResolvedFxSingle;
+import com.opengamma.strata.product.fxopt.ResolvedFxDigitalOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  *
@@ -49,7 +51,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
   /**
    * The trinomial tree.
    */
-  private static final TrinomialTree TREE = new TrinomialTree();
+  static final TrinomialTree TREE = new TrinomialTree();
   /**
    * Small parameter.
    */
@@ -333,8 +335,19 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData data) {
+
     if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
-      return priceDerivatives((ResolvedFxSingleBarrierOption) option, ratesProvider, volatilities, data);
+      final ResolvedFxSingleBarrierOption singleBarrierOption = (ResolvedFxSingleBarrierOption) option;
+      return priceDerivatives(singleBarrierOption, ratesProvider, volatilities, data);
+
+    } else if (option.getClass().equals(ResolvedFxDigitalOption.class)) {
+      final ResolvedFxDigitalOption fxDigitalOption = (ResolvedFxDigitalOption) option;
+      return TrinomialPricerExtensions.priceDerivatives(fxDigitalOption, ratesProvider, volatilities, data);
+
+    } else if (option.getClass().equals(ResolvedFxVanillaOption.class)) {
+      final ResolvedFxVanillaOption fxVanillaOption = (ResolvedFxVanillaOption) option;
+      return TrinomialPricerExtensions.priceDerivatives(fxVanillaOption, ratesProvider, volatilities, data);
+
     }
     throw new IllegalArgumentException("not implemented - " + option.getClass());
   }
@@ -351,6 +364,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
     ResolvedFxVanillaOption underlyingOption = option.getUnderlyingOption();
     double timeToExpiry = data.getTime(nSteps);
     ResolvedFxSingle underlyingFx = underlyingOption.getUnderlying();
+    //  TODO: is this a bug? why always counter currency
     Currency ccyBase = underlyingFx.getCounterCurrencyPayment().getCurrency();
     Currency ccyCounter = underlyingFx.getCounterCurrencyPayment().getCurrency();
     DiscountFactors baseDiscountFactors = ratesProvider.discountFactors(ccyBase);
@@ -360,8 +374,9 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
     double notional = Math.abs(underlyingFx.getBaseCurrencyPayment().getAmount());
     double[] rebateArray = new double[nSteps + 1];
     SimpleConstantContinuousBarrier barrier = (SimpleConstantContinuousBarrier) option.getBarrier();
-    if (option.getRebate().isPresent()) {
-      CurrencyAmount rebateCurrencyAmount = option.getRebate().get();
+    final Optional<CurrencyAmount> optionalRebate = option.getRebate();
+    if (optionalRebate.isPresent()) {
+      CurrencyAmount rebateCurrencyAmount = optionalRebate.get();
       double rebatePerUnit = rebateCurrencyAmount.getAmount() / notional;
       boolean isCounter = rebateCurrencyAmount.getCurrency().equals(ccyCounter);
       double rebate = isCounter ? rebatePerUnit : rebatePerUnit * barrier.getBarrierLevel();
@@ -403,7 +418,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
   }
 
   //-------------------------------------------------------------------------
-  private void validateData(ResolvedFxOption option,
+  static void validateData(ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData data) {

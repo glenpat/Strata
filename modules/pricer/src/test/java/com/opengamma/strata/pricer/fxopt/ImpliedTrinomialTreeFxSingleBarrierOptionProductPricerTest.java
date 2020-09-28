@@ -5,18 +5,6 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import static com.opengamma.strata.basics.currency.Currency.EUR;
-import static com.opengamma.strata.basics.currency.Currency.USD;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.data.Offset.offset;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import org.junit.jupiter.api.Test;
-
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.currency.Payment;
@@ -33,6 +21,17 @@ import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
 import com.opengamma.strata.product.option.BarrierType;
 import com.opengamma.strata.product.option.KnockType;
 import com.opengamma.strata.product.option.SimpleConstantContinuousBarrier;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import static com.opengamma.strata.basics.currency.Currency.EUR;
+import static com.opengamma.strata.basics.currency.Currency.USD;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.data.Offset.offset;
 
 /**
  * Test {@link ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer}.
@@ -104,9 +103,12 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
 
   private static final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer PRICER_70 =
       new ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer(70);
+  private static final RecombiningTrinomialTreeData DATA_70 =
+      PRICER_70.getCalibrator().calibrateTrinomialTree(CALL, RATE_PROVIDER, VOLS);
   private static final RecombiningTrinomialTreeData DATA_70_FLAT =
       PRICER_70.getCalibrator().calibrateTrinomialTree(CALL, RATE_PROVIDER_FLAT, VOLS_FLAT);
-  private static final BlackFxSingleBarrierOptionProductPricer BLACK_PRICER = BlackFxSingleBarrierOptionProductPricer.DEFAULT;
+  private static final BlackFxSingleBarrierOptionProductPricer BLACK_PRICER =
+      BlackFxSingleBarrierOptionProductPricer.DEFAULT;
   private static final BlackFxVanillaOptionProductPricer VANILLA_PRICER = BlackFxVanillaOptionProductPricer.DEFAULT;
 
   @Test
@@ -258,6 +260,21 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
       priceUkoPrev = priceUko;
       priceUkiPrev = priceUki;
     }
+  }
+
+  @Test
+  public void test_vanilla_trinomial() {
+    double tol = 1.0e-2;
+    double callPrice = VANILLA_PRICER.price(CALL, RATE_PROVIDER, VOLS);
+    double putPrice = VANILLA_PRICER.price(PUT, RATE_PROVIDER, VOLS);
+    double callPriceTree = PRICER_39.price(CALL, RATE_PROVIDER, VOLS, DATA_39);
+    double putPriceTree = PRICER_39.price(PUT, RATE_PROVIDER, VOLS, DATA_39);
+    assertEqualsRelative(callPriceTree, callPrice, tol);
+    assertEqualsRelative(putPriceTree, putPrice, tol);
+    double callPriceTree70 = PRICER_70.price(CALL, RATE_PROVIDER, VOLS, DATA_70);
+    double putPriceTree70 = PRICER_70.price(PUT, RATE_PROVIDER, VOLS, DATA_70);
+    assertEqualsRelative(callPriceTree70, callPrice, tol);
+    assertEqualsRelative(putPriceTree70, putPrice, tol);
   }
 
   @Test
