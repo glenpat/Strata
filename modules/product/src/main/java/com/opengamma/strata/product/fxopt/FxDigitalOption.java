@@ -6,6 +6,7 @@ import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.collect.ArgChecker;
+import com.opengamma.strata.product.common.LongShort;
 import com.opengamma.strata.product.fx.FxProduct;
 import com.opengamma.strata.product.option.BarrierType;
 import org.joda.beans.Bean;
@@ -14,6 +15,7 @@ import org.joda.beans.JodaBeanUtils;
 import org.joda.beans.MetaBean;
 import org.joda.beans.MetaProperty;
 import org.joda.beans.gen.BeanDefinition;
+import org.joda.beans.gen.ImmutableValidator;
 import org.joda.beans.gen.PropertyDefinition;
 import org.joda.beans.impl.direct.DirectFieldsBeanBuilder;
 import org.joda.beans.impl.direct.DirectMetaBean;
@@ -27,6 +29,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import static com.opengamma.strata.collect.ArgChecker.isEqual;
 
 /**
  *  Digital payout in counter currency
@@ -54,6 +58,13 @@ public final class FxDigitalOption
   private final FxIndex index;
 
   /**
+   * if long, holder receives digital payment
+   * if short, holder pays digital payment
+   */
+  @PropertyDefinition(validate = "notNull")
+  private final LongShort longShort;
+
+  /**
    * positive if long, negative if short
    */
   @PropertyDefinition(validate = "notNull")
@@ -75,6 +86,14 @@ public final class FxDigitalOption
    */
   public ZonedDateTime getExpiry() {
     return this.expiryDate.atTime(this.expiryTime).atZone(this.expiryZone);
+  }
+
+  //-------------------------------------------------------------------------
+  @ImmutableValidator
+  private void validate() {
+    //  make sure the payment currency matches the index counter currency (to be safe)
+    isEqual(this.payment.getCurrency(), this.index.getCurrencyPair().getCounter(), "payment.currency",
+        "index.counterCurrency");
   }
 
   //-------------------------------------------------------------------------
@@ -122,6 +141,7 @@ public final class FxDigitalOption
    * @param expiryTime  the value of the property, not null
    * @param expiryZone  the value of the property, not null
    * @param index  the value of the property, not null
+   * @param longShort  the value of the property, not null
    * @param payment  the value of the property, not null
    */
   FxDigitalOption(
@@ -131,6 +151,7 @@ public final class FxDigitalOption
       LocalTime expiryTime,
       ZoneId expiryZone,
       FxIndex index,
+      LongShort longShort,
       CurrencyAmount payment) {
     JodaBeanUtils.notNull(barrierType, "barrierType");
     ArgChecker.notNegativeOrNaN(strikePrice, "strikePrice");
@@ -138,6 +159,7 @@ public final class FxDigitalOption
     JodaBeanUtils.notNull(expiryTime, "expiryTime");
     JodaBeanUtils.notNull(expiryZone, "expiryZone");
     JodaBeanUtils.notNull(index, "index");
+    JodaBeanUtils.notNull(longShort, "longShort");
     JodaBeanUtils.notNull(payment, "payment");
     this.barrierType = barrierType;
     this.strikePrice = strikePrice;
@@ -145,7 +167,9 @@ public final class FxDigitalOption
     this.expiryTime = expiryTime;
     this.expiryZone = expiryZone;
     this.index = index;
+    this.longShort = longShort;
     this.payment = payment;
+    validate();
   }
 
   @Override
@@ -209,6 +233,16 @@ public final class FxDigitalOption
 
   //-----------------------------------------------------------------------
   /**
+   * Gets if long, holder receives digital payment
+   * if short, holder pays digital payment
+   * @return the value of the property, not null
+   */
+  public LongShort getLongShort() {
+    return longShort;
+  }
+
+  //-----------------------------------------------------------------------
+  /**
    * Gets positive if long, negative if short
    * @return the value of the property, not null
    */
@@ -238,6 +272,7 @@ public final class FxDigitalOption
           JodaBeanUtils.equal(expiryTime, other.expiryTime) &&
           JodaBeanUtils.equal(expiryZone, other.expiryZone) &&
           JodaBeanUtils.equal(index, other.index) &&
+          JodaBeanUtils.equal(longShort, other.longShort) &&
           JodaBeanUtils.equal(payment, other.payment);
     }
     return false;
@@ -252,13 +287,14 @@ public final class FxDigitalOption
     hash = hash * 31 + JodaBeanUtils.hashCode(expiryTime);
     hash = hash * 31 + JodaBeanUtils.hashCode(expiryZone);
     hash = hash * 31 + JodaBeanUtils.hashCode(index);
+    hash = hash * 31 + JodaBeanUtils.hashCode(longShort);
     hash = hash * 31 + JodaBeanUtils.hashCode(payment);
     return hash;
   }
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder(256);
+    StringBuilder buf = new StringBuilder(288);
     buf.append("FxDigitalOption{");
     buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
     buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
@@ -266,6 +302,7 @@ public final class FxDigitalOption
     buf.append("expiryTime").append('=').append(JodaBeanUtils.toString(expiryTime)).append(',').append(' ');
     buf.append("expiryZone").append('=').append(JodaBeanUtils.toString(expiryZone)).append(',').append(' ');
     buf.append("index").append('=').append(JodaBeanUtils.toString(index)).append(',').append(' ');
+    buf.append("longShort").append('=').append(JodaBeanUtils.toString(longShort)).append(',').append(' ');
     buf.append("payment").append('=').append(JodaBeanUtils.toString(payment));
     buf.append('}');
     return buf.toString();
@@ -312,6 +349,11 @@ public final class FxDigitalOption
     private final MetaProperty<FxIndex> index = DirectMetaProperty.ofImmutable(
         this, "index", FxDigitalOption.class, FxIndex.class);
     /**
+     * The meta-property for the {@code longShort} property.
+     */
+    private final MetaProperty<LongShort> longShort = DirectMetaProperty.ofImmutable(
+        this, "longShort", FxDigitalOption.class, LongShort.class);
+    /**
      * The meta-property for the {@code payment} property.
      */
     private final MetaProperty<CurrencyAmount> payment = DirectMetaProperty.ofImmutable(
@@ -327,6 +369,7 @@ public final class FxDigitalOption
         "expiryTime",
         "expiryZone",
         "index",
+        "longShort",
         "payment");
 
     /**
@@ -350,6 +393,8 @@ public final class FxDigitalOption
           return expiryZone;
         case 100346066:  // index
           return index;
+        case 116685664:  // longShort
+          return longShort;
         case -786681338:  // payment
           return payment;
       }
@@ -421,6 +466,14 @@ public final class FxDigitalOption
     }
 
     /**
+     * The meta-property for the {@code longShort} property.
+     * @return the meta-property, not null
+     */
+    public MetaProperty<LongShort> longShort() {
+      return longShort;
+    }
+
+    /**
      * The meta-property for the {@code payment} property.
      * @return the meta-property, not null
      */
@@ -444,6 +497,8 @@ public final class FxDigitalOption
           return ((FxDigitalOption) bean).getExpiryZone();
         case 100346066:  // index
           return ((FxDigitalOption) bean).getIndex();
+        case 116685664:  // longShort
+          return ((FxDigitalOption) bean).getLongShort();
         case -786681338:  // payment
           return ((FxDigitalOption) bean).getPayment();
       }
@@ -473,6 +528,7 @@ public final class FxDigitalOption
     private LocalTime expiryTime;
     private ZoneId expiryZone;
     private FxIndex index;
+    private LongShort longShort;
     private CurrencyAmount payment;
 
     /**
@@ -492,6 +548,7 @@ public final class FxDigitalOption
       this.expiryTime = beanToCopy.getExpiryTime();
       this.expiryZone = beanToCopy.getExpiryZone();
       this.index = beanToCopy.getIndex();
+      this.longShort = beanToCopy.getLongShort();
       this.payment = beanToCopy.getPayment();
     }
 
@@ -511,6 +568,8 @@ public final class FxDigitalOption
           return expiryZone;
         case 100346066:  // index
           return index;
+        case 116685664:  // longShort
+          return longShort;
         case -786681338:  // payment
           return payment;
         default:
@@ -539,6 +598,9 @@ public final class FxDigitalOption
         case 100346066:  // index
           this.index = (FxIndex) newValue;
           break;
+        case 116685664:  // longShort
+          this.longShort = (LongShort) newValue;
+          break;
         case -786681338:  // payment
           this.payment = (CurrencyAmount) newValue;
           break;
@@ -563,6 +625,7 @@ public final class FxDigitalOption
           expiryTime,
           expiryZone,
           index,
+          longShort,
           payment);
     }
 
@@ -634,6 +697,18 @@ public final class FxDigitalOption
     }
 
     /**
+     * Sets if long, holder receives digital payment
+     * if short, holder pays digital payment
+     * @param longShort  the new value, not null
+     * @return this, for chaining, not null
+     */
+    public Builder longShort(LongShort longShort) {
+      JodaBeanUtils.notNull(longShort, "longShort");
+      this.longShort = longShort;
+      return this;
+    }
+
+    /**
      * Sets positive if long, negative if short
      * @param payment  the new value, not null
      * @return this, for chaining, not null
@@ -647,7 +722,7 @@ public final class FxDigitalOption
     //-----------------------------------------------------------------------
     @Override
     public String toString() {
-      StringBuilder buf = new StringBuilder(256);
+      StringBuilder buf = new StringBuilder(288);
       buf.append("FxDigitalOption.Builder{");
       buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
       buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
@@ -655,6 +730,7 @@ public final class FxDigitalOption
       buf.append("expiryTime").append('=').append(JodaBeanUtils.toString(expiryTime)).append(',').append(' ');
       buf.append("expiryZone").append('=').append(JodaBeanUtils.toString(expiryZone)).append(',').append(' ');
       buf.append("index").append('=').append(JodaBeanUtils.toString(index)).append(',').append(' ');
+      buf.append("longShort").append('=').append(JodaBeanUtils.toString(longShort)).append(',').append(' ');
       buf.append("payment").append('=').append(JodaBeanUtils.toString(payment));
       buf.append('}');
       return buf.toString();

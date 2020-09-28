@@ -10,6 +10,7 @@ import com.google.common.math.DoubleMath;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.currency.FxRateProvider;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.value.ValueDerivatives;
 import com.opengamma.strata.collect.ArgChecker;
@@ -197,11 +198,9 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
 
     double price = price(option, ratesProvider, volatilities, treeData);
 
-    if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
-      ResolvedFxVanillaOption underlyingOption = ((ResolvedFxSingleBarrierOption) option).getUnderlyingOption();
-      return CurrencyAmount.of(underlyingOption.getCounterCurrency(), signedNotional(underlyingOption) * price);
-    }
-    throw new IllegalArgumentException("not implemented - " + option.getClass());
+    final CurrencyAmount signedNotional = option.getSignedNotional();
+
+    return signedNotional.multipliedBy(price);
   }
 
   //-------------------------------------------------------------------------
@@ -321,7 +320,8 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
     double delta = priceDerivatives.getDerivative(0);
     CurrencyPair currencyPair = underlyingOption.getUnderlying().getCurrencyPair();
     double todayFx = ratesProvider.fxRate(currencyPair);
-    double signedNotional = signedNotional(underlyingOption);
+    double signedNotional =
+        option.getSignedNotional().convertedTo(currencyPair.getCounter(), FxRateProvider.noConversion()).getAmount();
     CurrencyAmount domestic = CurrencyAmount.of(currencyPair.getCounter(), (price - delta * todayFx) * signedNotional);
     CurrencyAmount foreign = CurrencyAmount.of(currencyPair.getBase(), delta * signedNotional);
     return MultiCurrencyAmount.of(domestic, foreign);
@@ -403,17 +403,16 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
   }
 
   //-------------------------------------------------------------------------
-  private void validateData(ResolvedFxSingleBarrierOption option,
+  private void validateData(ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData data) {
 
-    ResolvedFxVanillaOption underlyingOption = option.getUnderlyingOption();
     ArgChecker.isTrue(DoubleMath.fuzzyEquals(data.getTime(data.getNumberOfSteps()),
-        volatilities.relativeTime(underlyingOption.getExpiry()), SMALL),
+        volatilities.relativeTime(option.getExpiry()), SMALL),
         "time to expiry mismatch between pricing option and trinomial tree data");
     ArgChecker.isTrue(DoubleMath.fuzzyEquals(data.getSpot(),
-        ratesProvider.fxRate(underlyingOption.getUnderlying().getCurrencyPair()), SMALL),
+        ratesProvider.fxRate(option.getCurrencyPair()), SMALL),
         "today's FX rate mismatch between rates provider and trinomial tree data");
   }
 

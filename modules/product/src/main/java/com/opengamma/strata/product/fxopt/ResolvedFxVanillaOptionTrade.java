@@ -121,7 +121,7 @@ public final class ResolvedFxVanillaOptionTrade
    */
   @Override
   public TradeInfo getInfo() {
-    return this.info;
+    return info;
   }
 
   //-----------------------------------------------------------------------
@@ -133,7 +133,7 @@ public final class ResolvedFxVanillaOptionTrade
    */
   @Override
   public ResolvedFxVanillaOption getProduct() {
-    return this.product;
+    return product;
   }
 
   //-----------------------------------------------------------------------
@@ -145,7 +145,7 @@ public final class ResolvedFxVanillaOptionTrade
    * @return the value of the property, not null
    */
   public Payment getPremium() {
-    return this.premium;
+    return premium;
   }
 
   //-----------------------------------------------------------------------
@@ -164,9 +164,9 @@ public final class ResolvedFxVanillaOptionTrade
     }
     if (obj != null && obj.getClass() == this.getClass()) {
       ResolvedFxVanillaOptionTrade other = (ResolvedFxVanillaOptionTrade) obj;
-      return JodaBeanUtils.equal(this.info, other.info) &&
-          JodaBeanUtils.equal(this.product, other.product) &&
-          JodaBeanUtils.equal(this.premium, other.premium);
+      return JodaBeanUtils.equal(info, other.info) &&
+          JodaBeanUtils.equal(product, other.product) &&
+          JodaBeanUtils.equal(premium, other.premium);
     }
     return false;
   }
@@ -174,9 +174,9 @@ public final class ResolvedFxVanillaOptionTrade
   @Override
   public int hashCode() {
     int hash = getClass().hashCode();
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.info);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.product);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.premium);
+    hash = hash * 31 + JodaBeanUtils.hashCode(info);
+    hash = hash * 31 + JodaBeanUtils.hashCode(product);
+    hash = hash * 31 + JodaBeanUtils.hashCode(premium);
     return hash;
   }
 
@@ -184,9 +184,9 @@ public final class ResolvedFxVanillaOptionTrade
   public String toString() {
     StringBuilder buf = new StringBuilder(128);
     buf.append("ResolvedFxVanillaOptionTrade{");
-    buf.append("info").append('=').append(JodaBeanUtils.toString(this.info)).append(',').append(' ');
-    buf.append("product").append('=').append(JodaBeanUtils.toString(this.product)).append(',').append(' ');
-    buf.append("premium").append('=').append(JodaBeanUtils.toString(this.premium));
+    buf.append("info").append('=').append(JodaBeanUtils.toString(info)).append(',').append(' ');
+    buf.append("product").append('=').append(JodaBeanUtils.toString(product)).append(',').append(' ');
+    buf.append("premium").append('=').append(JodaBeanUtils.toString(premium));
     buf.append('}');
     return buf.toString();
   }
@@ -235,11 +235,11 @@ public final class ResolvedFxVanillaOptionTrade
     protected MetaProperty<?> metaPropertyGet(String propertyName) {
       switch (propertyName.hashCode()) {
         case 3237038:  // info
-          return this.info;
+          return info;
         case -309474065:  // product
-          return this.product;
+          return product;
         case -318452137:  // premium
-          return this.premium;
+          return premium;
       }
       return super.metaPropertyGet(propertyName);
     }
@@ -256,7 +256,7 @@ public final class ResolvedFxVanillaOptionTrade
 
     @Override
     public Map<String, MetaProperty<?>> metaPropertyMap() {
-      return this.metaPropertyMap$;
+      return metaPropertyMap$;
     }
 
     //-----------------------------------------------------------------------
@@ -265,7 +265,7 @@ public final class ResolvedFxVanillaOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<TradeInfo> info() {
-      return this.info;
+      return info;
     }
 
     /**
@@ -273,7 +273,7 @@ public final class ResolvedFxVanillaOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<ResolvedFxVanillaOption> product() {
-      return this.product;
+      return product;
     }
 
     /**
@@ -281,7 +281,7 @@ public final class ResolvedFxVanillaOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<Payment> premium() {
-      return this.premium;
+      return premium;
     }
 
     //-----------------------------------------------------------------------
@@ -341,11 +341,11 @@ public final class ResolvedFxVanillaOptionTrade
     public Object get(String propertyName) {
       switch (propertyName.hashCode()) {
         case 3237038:  // info
-          return this.info;
+          return info;
         case -309474065:  // product
-          return this.product;
+          return product;
         case -318452137:  // premium
-          return this.premium;
+          return premium;
         default:
           throw new NoSuchElementException("Unknown property: " + propertyName);
       }
@@ -378,9 +378,9 @@ public final class ResolvedFxVanillaOptionTrade
     @Override
     public ResolvedFxVanillaOptionTrade build() {
       return new ResolvedFxVanillaOptionTrade(
-          this.info,
-          this.product,
-          this.premium);
+          info,
+          product,
+          premium);
     }
 
     //-----------------------------------------------------------------------
@@ -429,9 +429,9 @@ public final class ResolvedFxVanillaOptionTrade
     public String toString() {
       StringBuilder buf = new StringBuilder(128);
       buf.append("ResolvedFxVanillaOptionTrade.Builder{");
-      buf.append("info").append('=').append(JodaBeanUtils.toString(this.info)).append(',').append(' ');
-      buf.append("product").append('=').append(JodaBeanUtils.toString(this.product)).append(',').append(' ');
-      buf.append("premium").append('=').append(JodaBeanUtils.toString(this.premium));
+      buf.append("info").append('=').append(JodaBeanUtils.toString(info)).append(',').append(' ');
+      buf.append("product").append('=').append(JodaBeanUtils.toString(product)).append(',').append(' ');
+      buf.append("premium").append('=').append(JodaBeanUtils.toString(premium));
       buf.append('}');
       return buf.toString();
     }

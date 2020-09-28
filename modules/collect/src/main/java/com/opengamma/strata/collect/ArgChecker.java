@@ -1194,4 +1194,13 @@ public final class ArgChecker {
     }
   }
 
+  public static <T> void isEqual(final T obj1, final T obj2, final String name1,
+      final String name2) {
+    notNull(obj1, name1);
+    notNull(obj2, name2);
+    if (!obj1.equals(obj2)) {
+      throw new IllegalArgumentException(
+          Messages.format("Invalid order: Expected '{}' = '{}', but found: '{}' != '{}'", name1, name2, obj1, obj2));
+    }
+  }
 }
