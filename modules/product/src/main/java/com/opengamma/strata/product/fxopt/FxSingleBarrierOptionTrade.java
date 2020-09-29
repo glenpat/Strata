@@ -5,10 +5,17 @@
  */
 package com.opengamma.strata.product.fxopt;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import com.opengamma.strata.basics.ReferenceData;
+import com.opengamma.strata.basics.currency.AdjustablePayment;
+import com.opengamma.strata.basics.currency.CurrencyAmount;
+import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.product.PortfolioItemInfo;
+import com.opengamma.strata.product.PortfolioItemSummary;
+import com.opengamma.strata.product.ProductType;
+import com.opengamma.strata.product.ResolvableTrade;
+import com.opengamma.strata.product.TradeInfo;
+import com.opengamma.strata.product.common.SummarizerUtils;
+import com.opengamma.strata.product.fx.FxOptionTrade;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
 import org.joda.beans.JodaBeanUtils;
@@ -22,17 +29,9 @@ import org.joda.beans.impl.direct.DirectMetaBean;
 import org.joda.beans.impl.direct.DirectMetaProperty;
 import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 
-import com.opengamma.strata.basics.ReferenceData;
-import com.opengamma.strata.basics.currency.AdjustablePayment;
-import com.opengamma.strata.basics.currency.CurrencyAmount;
-import com.opengamma.strata.basics.currency.CurrencyPair;
-import com.opengamma.strata.product.PortfolioItemInfo;
-import com.opengamma.strata.product.PortfolioItemSummary;
-import com.opengamma.strata.product.ProductType;
-import com.opengamma.strata.product.ResolvableTrade;
-import com.opengamma.strata.product.TradeInfo;
-import com.opengamma.strata.product.common.SummarizerUtils;
-import com.opengamma.strata.product.fx.FxTrade;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * A trade in an FX single barrier option.
@@ -44,17 +43,17 @@ import com.opengamma.strata.product.fx.FxTrade;
  */
 @BeanDefinition
 public final class FxSingleBarrierOptionTrade
-    implements FxTrade, ResolvableTrade<ResolvedFxSingleBarrierOptionTrade>, ImmutableBean, Serializable {
+    implements FxOptionTrade, ResolvableTrade<ResolvedFxSingleBarrierOptionTrade>, ImmutableBean, Serializable {
 
   /**
-  * The additional trade information, defaulted to an empty instance.
-  * <p>
-  * This allows additional information to be attached to the trade.
-  */
+   * The additional trade information, defaulted to an empty instance.
+   * <p>
+   * This allows additional information to be attached to the trade.
+   */
   @PropertyDefinition(validate = "notNull", overrideGet = true)
   private final TradeInfo info;
   /**
-  * The FX option product that was agreed when the trade occurred.
+   * The FX option product that was agreed when the trade occurred.
   * <p>
   * The product captures the contracted financial details of the trade.
   */
@@ -78,7 +77,7 @@ public final class FxSingleBarrierOptionTrade
   //-------------------------------------------------------------------------
   @Override
   public FxSingleBarrierOptionTrade withInfo(PortfolioItemInfo info) {
-    return new FxSingleBarrierOptionTrade(TradeInfo.from(info), product, premium);
+    return new FxSingleBarrierOptionTrade(TradeInfo.from(info), this.product, this.premium);
   }
 
   //-------------------------------------------------------------------------
@@ -86,24 +85,24 @@ public final class FxSingleBarrierOptionTrade
   public PortfolioItemSummary summarize() {
     // Long Barrier Pay USD 1mm Premium USD 100k @ GBP/USD 1.32 : 21Jan18
     StringBuilder buf = new StringBuilder(96);
-    CurrencyAmount base = product.getUnderlyingOption().getUnderlying().getBaseCurrencyAmount();
-    CurrencyAmount counter = product.getUnderlyingOption().getUnderlying().getCounterCurrencyAmount();
-    buf.append(product.getUnderlyingOption().getLongShort());
+    CurrencyAmount base = this.product.getUnderlyingOption().getUnderlying().getBaseCurrencyAmount();
+    CurrencyAmount counter = this.product.getUnderlyingOption().getUnderlying().getCounterCurrencyAmount();
+    buf.append(this.product.getUnderlyingOption().getLongShort());
     buf.append(" Barrier ");
-    buf.append(product.getBarrier().getBarrierType().toString());
+    buf.append(this.product.getBarrier().getBarrierType().toString());
     buf.append("-and-");
-    buf.append(product.getBarrier().getKnockType().toString());
+    buf.append(this.product.getBarrier().getKnockType().toString());
     buf.append(" @ ");
-    buf.append(product.getUnderlyingOption().getCurrencyPair());
+    buf.append(this.product.getUnderlyingOption().getCurrencyPair());
     buf.append(" ");
-    buf.append(product.getBarrier().getBarrierLevel(product.getUnderlyingOption().getExpiryDate()));
+    buf.append(this.product.getBarrier().getBarrierLevel(this.product.getUnderlyingOption().getExpiryDate()));
     buf.append(" ");
     buf.append(SummarizerUtils.fx(base, counter));
     buf.append(" Premium ");
-    buf.append(SummarizerUtils.amount(premium.getValue().mapAmount(v -> Math.abs(v))));
+    buf.append(SummarizerUtils.amount(this.premium.getValue().mapAmount(v -> Math.abs(v))));
     buf.append(" : ");
-    buf.append(SummarizerUtils.date(product.getUnderlyingOption().getExpiryDate()));
-    CurrencyPair currencyPair = product.getCurrencyPair();
+    buf.append(SummarizerUtils.date(this.product.getUnderlyingOption().getExpiryDate()));
+    CurrencyPair currencyPair = this.product.getCurrencyPair();
     return SummarizerUtils.summary(
         this, ProductType.FX_SINGLE_BARRIER_OPTION, buf.toString(), currencyPair.getBase(), currencyPair.getCounter());
   }
@@ -111,9 +110,9 @@ public final class FxSingleBarrierOptionTrade
   @Override
   public ResolvedFxSingleBarrierOptionTrade resolve(ReferenceData refData) {
     return ResolvedFxSingleBarrierOptionTrade.builder()
-        .info(info)
-        .product(product.resolve(refData))
-        .premium(premium.resolve(refData))
+        .info(this.info)
+        .product(this.product.resolve(refData))
+        .premium(this.premium.resolve(refData))
         .build();
   }
 

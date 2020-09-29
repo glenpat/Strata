@@ -7,7 +7,7 @@ import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.product.common.LongShort;
-import com.opengamma.strata.product.fx.FxProduct;
+import com.opengamma.strata.product.fx.FxOption;
 import com.opengamma.strata.product.option.BarrierType;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
@@ -37,7 +37,7 @@ import static com.opengamma.strata.collect.ArgChecker.isEqual;
  */
 @BeanDefinition(constructorScope = "package")
 public final class FxDigitalOption
-    implements FxProduct, Resolvable<ResolvedFxDigitalOption>, ImmutableBean, Serializable {
+    implements FxOption, Resolvable<ResolvedFxDigitalOption>, ImmutableBean, Serializable {
 
   @PropertyDefinition(validate = "notNull")
   private final BarrierType barrierType;

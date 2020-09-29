@@ -9,7 +9,7 @@ import com.opengamma.strata.product.ProductType;
 import com.opengamma.strata.product.ResolvableTrade;
 import com.opengamma.strata.product.TradeInfo;
 import com.opengamma.strata.product.common.SummarizerUtils;
-import com.opengamma.strata.product.fx.FxTrade;
+import com.opengamma.strata.product.fx.FxOptionTrade;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
 import org.joda.beans.JodaBeanUtils;
@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 
 @BeanDefinition
 public final class FxDigitalOptionTrade
-    implements FxTrade, ResolvableTrade<ResolvedFxDigitalOptionTrade>, ImmutableBean, Serializable {
+    implements FxOptionTrade, ResolvableTrade<ResolvedFxDigitalOptionTrade>, ImmutableBean, Serializable {
 
   /**
    * The additional trade information, defaulted to an empty instance.

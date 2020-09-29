@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.measure;
 
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.calc.CalculationRunner;
 import com.opengamma.strata.calc.marketdata.MarketDataFactory;
@@ -30,8 +28,8 @@ import com.opengamma.strata.measure.fx.FxNdfTradeCalculationFunction;
 import com.opengamma.strata.measure.fx.FxRateMarketDataFunction;
 import com.opengamma.strata.measure.fx.FxSingleTradeCalculationFunction;
 import com.opengamma.strata.measure.fx.FxSwapTradeCalculationFunction;
+import com.opengamma.strata.measure.fxopt.FxOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.fxopt.FxOptionVolatilitiesMarketDataFunction;
-import com.opengamma.strata.measure.fxopt.FxSingleBarrierOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.fxopt.FxVanillaOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.index.IborFutureOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.index.IborFutureTradeCalculationFunction;
@@ -67,6 +65,7 @@ import com.opengamma.strata.product.fra.FraTrade;
 import com.opengamma.strata.product.fx.FxNdfTrade;
 import com.opengamma.strata.product.fx.FxSingleTrade;
 import com.opengamma.strata.product.fx.FxSwapTrade;
+import com.opengamma.strata.product.fxopt.FxDigitalOptionTrade;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOptionTrade;
 import com.opengamma.strata.product.fxopt.FxVanillaOptionTrade;
 import com.opengamma.strata.product.index.IborFutureOptionPosition;
@@ -78,6 +77,8 @@ import com.opengamma.strata.product.index.OvernightFutureTrade;
 import com.opengamma.strata.product.payment.BulletPaymentTrade;
 import com.opengamma.strata.product.swap.SwapTrade;
 import com.opengamma.strata.product.swaption.SwaptionTrade;
+
+import java.util.List;
 
 /**
  * Factory methods for creating standard Strata components.
@@ -102,7 +103,11 @@ public final class StandardComponents {
       new CdsIndexTradeCalculationFunction(),
       new FraTradeCalculationFunction(),
       new FxNdfTradeCalculationFunction(),
-      new FxSingleBarrierOptionTradeCalculationFunction(),
+//      new FxSingleBarrierOptionTradeCalculationFunction(),
+//      new FxOptionTradeCalculationFunction<>(FxVanillaOptionTrade.class),
+      new FxOptionTradeCalculationFunction<>(FxSingleBarrierOptionTrade.class),
+      new FxOptionTradeCalculationFunction<>(FxDigitalOptionTrade.class),
+
       new FxSingleTradeCalculationFunction(),
       new FxSwapTradeCalculationFunction(),
       new FxVanillaOptionTradeCalculationFunction(),
