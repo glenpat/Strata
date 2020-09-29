@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import java.time.LocalDate;
-
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.currency.Payment;
@@ -15,8 +13,12 @@ import com.opengamma.strata.market.sensitivity.PointSensitivities;
 import com.opengamma.strata.market.sensitivity.PointSensitivityBuilder;
 import com.opengamma.strata.pricer.DiscountingPaymentPricer;
 import com.opengamma.strata.pricer.rate.RatesProvider;
+import com.opengamma.strata.product.fxopt.ResolvedFxOption;
+import com.opengamma.strata.product.fxopt.ResolvedFxOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
+
+import java.time.LocalDate;
 
 /**
  * Pricer for FX barrier option trades in Black-Scholes world.
@@ -66,14 +68,14 @@ public class BlackFxSingleBarrierOptionTradePricer {
    * @return the present value of the trade
    */
   public MultiCurrencyAmount presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
-    CurrencyAmount pvProduct = productPricer.presentValue(product, ratesProvider, volatilities);
+    ResolvedFxOption product = trade.getProduct();
+    CurrencyAmount pvProduct = this.productPricer.presentValue(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
-    CurrencyAmount pvPremium = paymentPricer.presentValue(premium, ratesProvider);
+    CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
     return MultiCurrencyAmount.of(pvProduct, pvPremium);
   }
 
@@ -92,15 +94,15 @@ public class BlackFxSingleBarrierOptionTradePricer {
    * @return the present value curve sensitivity of the trade
    */
   public PointSensitivities presentValueSensitivityRatesStickyStrike(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
+    ResolvedFxOption product = trade.getProduct();
     PointSensitivityBuilder pvcsProduct =
-        productPricer.presentValueSensitivityRatesStickyStrike(product, ratesProvider, volatilities);
+        this.productPricer.presentValueSensitivityRatesStickyStrike(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
-    PointSensitivityBuilder pvcsPremium = paymentPricer.presentValueSensitivity(premium, ratesProvider);
+    PointSensitivityBuilder pvcsPremium = this.paymentPricer.presentValueSensitivity(premium, ratesProvider);
     return pvcsProduct.combinedWith(pvcsPremium).build();
   }
 
@@ -116,12 +118,13 @@ public class BlackFxSingleBarrierOptionTradePricer {
    * @return the present value sensitivity
    */
   public PointSensitivities presentValueSensitivityModelParamsVolatility(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
-    return productPricer.presentValueSensitivityModelParamsVolatility(product, ratesProvider, volatilities).build();
+    ResolvedFxOption product = trade.getProduct();
+    return this.productPricer.presentValueSensitivityModelParamsVolatility(product, ratesProvider, volatilities)
+        .build();
   }
 
   //-------------------------------------------------------------------------
@@ -134,25 +137,26 @@ public class BlackFxSingleBarrierOptionTradePricer {
    * @return the currency exposure
    */
   public MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     Payment premium = trade.getPremium();
-    CurrencyAmount pvPremium = paymentPricer.presentValue(premium, ratesProvider);
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
-    return productPricer.currencyExposure(product, ratesProvider, volatilities).plus(pvPremium);
+    CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
+    ResolvedFxOption product = trade.getProduct();
+    return this.productPricer.currencyExposure(product, ratesProvider, volatilities).plus(pvPremium);
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Calculates the current of the FX barrier option trade.
-   * 
+   *
    * @param trade  the option trade
    * @param valuationDate  the valuation date
    * @return the current cash amount
    */
-  public CurrencyAmount currentCash(ResolvedFxSingleBarrierOptionTrade trade, LocalDate valuationDate) {
+  public CurrencyAmount currentCash(ResolvedFxOptionTrade trade, LocalDate valuationDate) {
     Payment premium = trade.getPremium();
     if (premium.getDate().equals(valuationDate)) {
       return CurrencyAmount.of(premium.getCurrency(), premium.getAmount());
