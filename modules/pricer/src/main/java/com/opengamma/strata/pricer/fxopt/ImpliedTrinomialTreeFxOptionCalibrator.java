@@ -128,7 +128,9 @@ public class ImpliedTrinomialTreeFxOptionCalibrator {
 
     ArgChecker.isTrue(
         ratesProvider.getValuationDate().isEqual(volatilities.getValuationDateTime().toLocalDate()),
-        "Volatility and rate data must be for the same date");
+        "Volatility and rate data must be for the same date",
+        volatilities.getValuationDateTime().toLocalDate(),
+        ratesProvider.getValuationDate());
   }
 
 }

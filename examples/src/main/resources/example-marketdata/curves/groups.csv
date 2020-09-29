@@ -5,3 +5,4 @@ Default,Forward,USD-LIBOR-3M,USD-3ML
 Default,Forward,USD-LIBOR-6M,USD-6ML
 Default,Discount,GBP,GBP-Disc
 Default,Forward,GBP-LIBOR-3M,GBP-3ML
+Default,Discount,BTC,BTC-Disc

@@ -5,11 +5,6 @@
  */
 package com.opengamma.strata.measure.fxopt;
 
-import java.util.Optional;
-
-import org.joda.convert.FromString;
-import org.joda.convert.ToString;
-
 import com.opengamma.strata.basics.CalculationTarget;
 import com.opengamma.strata.calc.CalculationRules;
 import com.opengamma.strata.calc.Measure;
@@ -18,9 +13,15 @@ import com.opengamma.strata.collect.named.EnumNames;
 import com.opengamma.strata.collect.named.NamedEnum;
 import com.opengamma.strata.data.scenario.ScenarioMarketData;
 import com.opengamma.strata.pricer.fxopt.BlackFxOptionVolatilities;
+import com.opengamma.strata.product.fx.FxOptionTrade;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOptionTrade;
+import org.joda.convert.FromString;
+import org.joda.convert.ToString;
+
+import java.util.Optional;
 
 /**
+ * <PF>also used for the more generic {@link FxOptionTradeCalculationFunction}</PF>
  * The method to use for pricing FX single barrier options.
  * <p>
  * This provides the ability to use different methods for pricing FX options.
@@ -70,8 +71,12 @@ public enum FxSingleBarrierOptionMethod implements NamedEnum, CalculationParamet
     if (target instanceof FxSingleBarrierOptionTrade) {
       return Optional.of(this);
     }
+    //  <PF>added</PF>
+    if (target instanceof FxOptionTrade) {
+      return Optional.of(this);
+    }
     return Optional.empty();
-  };
+  }
 
   //-------------------------------------------------------------------------
   /**
