@@ -103,11 +103,11 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
    * @return the present value curve sensitivity of the trade
    */
   public CurrencyParameterSensitivities presentValueSensitivityRates(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
+    ResolvedFxOption product = trade.getProduct();
     CurrencyParameterSensitivities sensProduct =
         this.productPricer.presentValueSensitivityRates(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
@@ -129,25 +129,26 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
    * @return the currency exposure
    */
   public MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     Payment premium = trade.getPremium();
     CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
-    ResolvedFxSingleBarrierOption product = trade.getProduct();
+    ResolvedFxOption product = trade.getProduct();
     return this.productPricer.currencyExposure(product, ratesProvider, volatilities).plus(pvPremium);
   }
 
   //-------------------------------------------------------------------------
+
   /**
    * Calculates the current of the FX barrier option trade.
-   * 
+   *
    * @param trade  the option trade
    * @param valuationDate  the valuation date
    * @return the current cash amount
    */
-  public CurrencyAmount currentCash(ResolvedFxSingleBarrierOptionTrade trade, LocalDate valuationDate) {
+  public CurrencyAmount currentCash(ResolvedFxOptionTrade trade, LocalDate valuationDate) {
     Payment premium = trade.getPremium();
     if (premium.getDate().equals(valuationDate)) {
       return CurrencyAmount.of(premium.getCurrency(), premium.getAmount());

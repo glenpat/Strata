@@ -220,12 +220,12 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
    * @return the present value of the product
    */
   public CurrencyParameterSensitivities presentValueSensitivityRates(
-      ResolvedFxSingleBarrierOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData baseTreeData =
-        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option, ratesProvider, volatilities);
     return presentValueSensitivityRates(option, ratesProvider, volatilities, baseTreeData);
   }
 
@@ -289,12 +289,12 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
    * @return the currency exposure
    */
   public MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     RecombiningTrinomialTreeData treeData =
-        this.calibrator.calibrateTrinomialTree(option.getUnderlyingOption(), ratesProvider, volatilities);
+        this.calibrator.calibrateTrinomialTree(option, ratesProvider, volatilities);
     return currencyExposure(option, ratesProvider, volatilities, treeData);
   }
 
@@ -311,16 +311,15 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
    * @return the currency exposure
    */
   public MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData treeData) {
 
-    ResolvedFxVanillaOption underlyingOption = option.getUnderlyingOption();
     ValueDerivatives priceDerivatives = priceDerivatives(option, ratesProvider, volatilities, treeData);
     double price = priceDerivatives.getValue();
     double delta = priceDerivatives.getDerivative(0);
-    CurrencyPair currencyPair = underlyingOption.getUnderlying().getCurrencyPair();
+    CurrencyPair currencyPair = option.getCurrencyPair();
     double todayFx = ratesProvider.fxRate(currencyPair);
     double signedNotional =
         option.getSignedNotional().convertedTo(currencyPair.getCounter(), FxRateProvider.noConversion()).getAmount();
