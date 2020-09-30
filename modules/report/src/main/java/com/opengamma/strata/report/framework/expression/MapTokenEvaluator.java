@@ -5,14 +5,14 @@
  */
 package com.opengamma.strata.report.framework.expression;
 
+import com.opengamma.strata.calc.runner.CalculationFunctions;
+import com.opengamma.strata.collect.MapStream;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.opengamma.strata.calc.runner.CalculationFunctions;
-import com.opengamma.strata.collect.MapStream;
 
 /**
  * Evaluates a token against a map.
@@ -42,6 +42,6 @@ public class MapTokenEvaluator extends TokenEvaluator<Map<?, ?>> {
         .filterKeys(key -> firstToken.equalsIgnoreCase(key.toString()))
         .findFirst()
         .map(e -> EvaluationResult.success(e.getValue(), remainingTokens))
-        .orElse(invalidTokenFailure(map, firstToken));
+        .orElseGet(() -> invalidTokenFailure(map, firstToken));
   }
 }

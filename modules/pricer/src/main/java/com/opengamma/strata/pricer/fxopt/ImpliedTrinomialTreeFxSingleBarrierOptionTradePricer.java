@@ -81,7 +81,11 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
     CurrencyAmount pvProduct = this.productPricer.presentValue(product, ratesProvider, volatilities);
     Payment premium = trade.getPremium();
     CurrencyAmount pvPremium = this.paymentPricer.presentValue(premium, ratesProvider);
-    return MultiCurrencyAmount.of(pvProduct, pvPremium);
+    if (pvProduct.getCurrency().equals(pvPremium.getCurrency())) {
+      return MultiCurrencyAmount.of(pvProduct.plus(pvPremium));
+    } else {
+      return MultiCurrencyAmount.of(pvProduct, pvPremium);
+    }
   }
 
   //-------------------------------------------------------------------------

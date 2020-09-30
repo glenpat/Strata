@@ -81,8 +81,6 @@ public class CryptoPricingExample {
         Column.of(Measures.PRESENT_VALUE),
         Column.of(Measures.PV01_CALIBRATED_SUM),
         Column.of(Measures.PV01_CALIBRATED_BUCKETED),
-        Column.of(Measures.PV01_MARKET_QUOTE_SUM),
-        Column.of(Measures.PV01_MARKET_QUOTE_BUCKETED),
         Column.of(Measures.CURRENCY_EXPOSURE),
         Column.of(Measures.CURRENT_CASH),
         Column.of(Measures.RESOLVED_TARGET)
@@ -142,92 +140,103 @@ public class CryptoPricingExample {
 
   // create an FX Forward trade
   private static Trade createTrade1() {
+
+    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
+        .longShort(LongShort.LONG)
+        .barrierType(BarrierType.UP)
+        .index(fxIndex)
+        .strikePrice(11000)
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .expiryZone(ZoneId.of("UTC"))
+        .payment(CurrencyAmount.of(Currency.USD, -10_000))
+        .build();
+
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
             .id(StandardId.of("example", "1"))
-            .addAttribute(AttributeType.DESCRIPTION, "example 1")
+            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
-        .product(FxDigitalOption.builder()
-            .longShort(LongShort.LONG)
-            .barrierType(BarrierType.UP)
-            .index(fxIndex)
-            .strikePrice(11000)
-            .expiryDate(expiryDate0)
-            .expiryTime(LocalTime.of(12, 0))
-            .expiryZone(ZoneId.of("UTC"))
-            .payment(CurrencyAmount.of(Currency.USD, 10_000))
-            .build())
+        .product(fxDigitalOption)
         .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
         .build();
   }
 
   // create an FX Forward trade
   private static Trade createTrade2() {
+    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
+        .longShort(LongShort.LONG)
+        .barrierType(BarrierType.DOWN)
+        .index(fxIndex)
+        .strikePrice(11000)
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .expiryZone(ZoneId.of("UTC"))
+        .payment(CurrencyAmount.of(Currency.USD, -10_000))
+        .build();
+
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
             .id(StandardId.of("example", "2"))
-            .addAttribute(AttributeType.DESCRIPTION, "example 2")
+            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
-        .product(FxDigitalOption.builder()
-            .longShort(LongShort.LONG)
-            .barrierType(BarrierType.DOWN)
-            .index(fxIndex)
-            .strikePrice(11000)
-            .expiryDate(expiryDate0)
-            .expiryTime(LocalTime.of(12, 0))
-            .expiryZone(ZoneId.of("UTC"))
-            .payment(CurrencyAmount.of(Currency.USD, 10_000))
-            .build())
+        .product(fxDigitalOption)
         .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
         .build();
   }
 
   // create an FX Swap trade
   private static Trade createTrade3() {
+
+    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
+        .longShort(LongShort.LONG)
+        .barrierType(BarrierType.DOWN)
+        .index(FxIndices.BTC_USD_HXRO)
+        .strikePrice(8000)
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .payment(CurrencyAmount.of(Currency.USD, -10_000))
+        .expiryZone(ZoneId.of("UTC"))
+        .build();
+
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
             .id(StandardId.of("example", "3"))
-            .addAttribute(AttributeType.DESCRIPTION, "example 3")
+            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
-        .product(FxDigitalOption.builder()
-            .longShort(LongShort.LONG)
-            .barrierType(BarrierType.DOWN)
-            .index(FxIndices.BTC_USD_HXRO)
-            .strikePrice(8000)
-            .expiryDate(expiryDate0)
-            .expiryTime(LocalTime.of(12, 0))
-            .payment(CurrencyAmount.of(Currency.USD, 10_000))
-            .expiryZone(ZoneId.of("UTC"))
-            .build())
+        .product(fxDigitalOption)
         .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
         .build();
   }
 
   // create a Bullet Payment trade
   private static Trade createTrade4() {
+
+    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
+        .longShort(LongShort.LONG)
+        .barrierType(BarrierType.UP)
+        .index(fxIndex)
+        .strikePrice(8000)
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .payment(CurrencyAmount.of(Currency.USD, -10_000))
+        .expiryZone(ZoneId.of("UTC"))
+        .build();
+
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
             .id(StandardId.of("example", "4"))
-            .addAttribute(AttributeType.DESCRIPTION, "example 4")
+            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
-        .product(FxDigitalOption.builder()
-            .longShort(LongShort.LONG)
-            .barrierType(BarrierType.UP)
-            .index(fxIndex)
-            .strikePrice(8000)
-            .expiryDate(expiryDate0)
-            .expiryTime(LocalTime.of(12, 0))
-            .payment(CurrencyAmount.of(Currency.USD, 10_000))
-            .expiryZone(ZoneId.of("UTC"))
-            .build())
+        .product(fxDigitalOption)
         .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
         .build();
   }
