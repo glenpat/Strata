@@ -9,8 +9,10 @@ import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.StandardId;
 import com.opengamma.strata.basics.currency.AdjustablePayment;
+import com.opengamma.strata.basics.currency.Crypto;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
+import com.opengamma.strata.basics.currency.Payment;
 import com.opengamma.strata.basics.date.DayCounts;
 import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.basics.index.FxIndices;
@@ -38,8 +40,11 @@ import com.opengamma.strata.product.AttributeType;
 import com.opengamma.strata.product.Trade;
 import com.opengamma.strata.product.TradeInfo;
 import com.opengamma.strata.product.common.LongShort;
+import com.opengamma.strata.product.fx.FxSingle;
 import com.opengamma.strata.product.fxopt.FxDigitalOption;
 import com.opengamma.strata.product.fxopt.FxDigitalOptionTrade;
+import com.opengamma.strata.product.fxopt.FxVanillaOption;
+import com.opengamma.strata.product.fxopt.FxVanillaOptionTrade;
 import com.opengamma.strata.product.option.BarrierType;
 import com.opengamma.strata.report.ReportCalculationResults;
 import com.opengamma.strata.report.trade.TradeReport;
@@ -74,7 +79,9 @@ public class CryptoPricingExample {
   // obtains the data and calculates the grid of results
   private static void calculate(CalculationRunner runner) {
     // the trades that will have measures calculated
-    List<Trade> trades = ImmutableList.of(createTrade1(), createTrade2(), createTrade3(), createTrade4());
+    List<Trade> trades =
+        ImmutableList
+            .of(createTrade1(), createTrade2(), createTrade3(), createTrade4(), createTrade5(), createTrade6());
 
     // the columns, specifying the measures to be calculated
     List<Column> columns = ImmutableList.of(
@@ -241,4 +248,55 @@ public class CryptoPricingExample {
         .build();
   }
 
+  private static Trade createTrade5() {
+
+    FxSingle test =
+        FxSingle.of(Payment.of(CurrencyAmount.of(Currency.USD, -11000), expiryDate0), Payment.of(CurrencyAmount.of(
+            Crypto.BTC, 1), expiryDate0));
+
+    final FxVanillaOption fxVanillaOption = FxVanillaOption.builder()
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .expiryZone(ZoneId.of("UTC"))
+        .longShort(LongShort.LONG)
+        .underlying(test)
+        .build();
+
+    return FxVanillaOptionTrade.builder()
+        .info(TradeInfo.builder()
+            .id(StandardId.of("example", "5"))
+            .addAttribute(AttributeType.DESCRIPTION, fxVanillaOption.toString())
+            .counterparty(StandardId.of("example", "BigBankA"))
+            .settlementDate(tradeSettleDate)
+            .build())
+        .product(fxVanillaOption)
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
+        .build();
+  }
+
+  private static Trade createTrade6() {
+
+    FxSingle test =
+        FxSingle.of(Payment.of(CurrencyAmount.of(Currency.USD, -11010), expiryDate0), Payment.of(CurrencyAmount.of(
+            Crypto.BTC, 1), expiryDate0));
+
+    final FxVanillaOption fxVanillaOption = FxVanillaOption.builder()
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .expiryZone(ZoneId.of("UTC"))
+        .longShort(LongShort.LONG)
+        .underlying(test)
+        .build();
+
+    return FxVanillaOptionTrade.builder()
+        .info(TradeInfo.builder()
+            .id(StandardId.of("example", "6"))
+            .addAttribute(AttributeType.DESCRIPTION, fxVanillaOption.toString())
+            .counterparty(StandardId.of("example", "BigBankA"))
+            .settlementDate(tradeSettleDate)
+            .build())
+        .product(fxVanillaOption)
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
+        .build();
+  }
 }
