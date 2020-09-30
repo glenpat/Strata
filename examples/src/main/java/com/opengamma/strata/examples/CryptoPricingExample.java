@@ -40,6 +40,7 @@ import com.opengamma.strata.product.AttributeType;
 import com.opengamma.strata.product.Trade;
 import com.opengamma.strata.product.TradeInfo;
 import com.opengamma.strata.product.common.LongShort;
+import com.opengamma.strata.product.etd.EtdOptionType;
 import com.opengamma.strata.product.fx.FxSingle;
 import com.opengamma.strata.product.fxopt.FxDigitalOption;
 import com.opengamma.strata.product.fxopt.FxDigitalOptionTrade;
@@ -151,6 +152,7 @@ public class CryptoPricingExample {
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
         .longShort(LongShort.LONG)
         .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
         .strikePrice(11000)
         .expiryDate(expiryDate0)
@@ -175,7 +177,8 @@ public class CryptoPricingExample {
   private static Trade createTrade2() {
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
         .longShort(LongShort.LONG)
-        .barrierType(BarrierType.DOWN)
+        .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.AMERICAN)
         .index(fxIndex)
         .strikePrice(11000)
         .expiryDate(expiryDate0)
@@ -202,6 +205,7 @@ public class CryptoPricingExample {
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
         .longShort(LongShort.LONG)
         .barrierType(BarrierType.DOWN)
+        .optionType(EtdOptionType.EUROPEAN)
         .index(FxIndices.BTC_USD_HXRO)
         .strikePrice(8000)
         .expiryDate(expiryDate0)
@@ -228,6 +232,7 @@ public class CryptoPricingExample {
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
         .longShort(LongShort.LONG)
         .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
         .strikePrice(8000)
         .expiryDate(expiryDate0)

@@ -219,7 +219,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public CurveName getCurveName() {
-    return this.curveName;
+    return curveName;
   }
 
   //-----------------------------------------------------------------------
@@ -228,7 +228,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public ValueType getXValueType() {
-    return this.xValueType;
+    return xValueType;
   }
 
   //-----------------------------------------------------------------------
@@ -237,7 +237,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public ValueType getYValueType() {
-    return this.yValueType;
+    return yValueType;
   }
 
   //-----------------------------------------------------------------------
@@ -246,7 +246,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public DayCount getDayCount() {
-    return this.dayCount;
+    return dayCount;
   }
 
   //-----------------------------------------------------------------------
@@ -255,7 +255,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public CurveInterpolator getInterpolator() {
-    return this.interpolator;
+    return interpolator;
   }
 
   //-----------------------------------------------------------------------
@@ -264,7 +264,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public CurveExtrapolator getExtrapolatorLeft() {
-    return this.extrapolatorLeft;
+    return extrapolatorLeft;
   }
 
   //-----------------------------------------------------------------------
@@ -273,7 +273,7 @@ final class LoadedCurveSettings
    * @return the value of the property, not null
    */
   public CurveExtrapolator getExtrapolatorRight() {
-    return this.extrapolatorRight;
+    return extrapolatorRight;
   }
 
   //-----------------------------------------------------------------------
@@ -284,13 +284,13 @@ final class LoadedCurveSettings
     }
     if (obj != null && obj.getClass() == this.getClass()) {
       LoadedCurveSettings other = (LoadedCurveSettings) obj;
-      return JodaBeanUtils.equal(this.curveName, other.curveName) &&
-          JodaBeanUtils.equal(this.xValueType, other.xValueType) &&
-          JodaBeanUtils.equal(this.yValueType, other.yValueType) &&
-          JodaBeanUtils.equal(this.dayCount, other.dayCount) &&
-          JodaBeanUtils.equal(this.interpolator, other.interpolator) &&
-          JodaBeanUtils.equal(this.extrapolatorLeft, other.extrapolatorLeft) &&
-          JodaBeanUtils.equal(this.extrapolatorRight, other.extrapolatorRight);
+      return JodaBeanUtils.equal(curveName, other.curveName) &&
+          JodaBeanUtils.equal(xValueType, other.xValueType) &&
+          JodaBeanUtils.equal(yValueType, other.yValueType) &&
+          JodaBeanUtils.equal(dayCount, other.dayCount) &&
+          JodaBeanUtils.equal(interpolator, other.interpolator) &&
+          JodaBeanUtils.equal(extrapolatorLeft, other.extrapolatorLeft) &&
+          JodaBeanUtils.equal(extrapolatorRight, other.extrapolatorRight);
     }
     return false;
   }
@@ -298,13 +298,13 @@ final class LoadedCurveSettings
   @Override
   public int hashCode() {
     int hash = getClass().hashCode();
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.curveName);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.xValueType);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.yValueType);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.dayCount);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.interpolator);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.extrapolatorLeft);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.extrapolatorRight);
+    hash = hash * 31 + JodaBeanUtils.hashCode(curveName);
+    hash = hash * 31 + JodaBeanUtils.hashCode(xValueType);
+    hash = hash * 31 + JodaBeanUtils.hashCode(yValueType);
+    hash = hash * 31 + JodaBeanUtils.hashCode(dayCount);
+    hash = hash * 31 + JodaBeanUtils.hashCode(interpolator);
+    hash = hash * 31 + JodaBeanUtils.hashCode(extrapolatorLeft);
+    hash = hash * 31 + JodaBeanUtils.hashCode(extrapolatorRight);
     return hash;
   }
 
@@ -312,13 +312,13 @@ final class LoadedCurveSettings
   public String toString() {
     StringBuilder buf = new StringBuilder(256);
     buf.append("LoadedCurveSettings{");
-    buf.append("curveName").append('=').append(JodaBeanUtils.toString(this.curveName)).append(',').append(' ');
-    buf.append("xValueType").append('=').append(JodaBeanUtils.toString(this.xValueType)).append(',').append(' ');
-    buf.append("yValueType").append('=').append(JodaBeanUtils.toString(this.yValueType)).append(',').append(' ');
-    buf.append("dayCount").append('=').append(JodaBeanUtils.toString(this.dayCount)).append(',').append(' ');
-    buf.append("interpolator").append('=').append(JodaBeanUtils.toString(this.interpolator)).append(',').append(' ');
-    buf.append("extrapolatorLeft").append('=').append(JodaBeanUtils.toString(this.extrapolatorLeft)).append(',').append(' ');
-    buf.append("extrapolatorRight").append('=').append(JodaBeanUtils.toString(this.extrapolatorRight));
+    buf.append("curveName").append('=').append(JodaBeanUtils.toString(curveName)).append(',').append(' ');
+    buf.append("xValueType").append('=').append(JodaBeanUtils.toString(xValueType)).append(',').append(' ');
+    buf.append("yValueType").append('=').append(JodaBeanUtils.toString(yValueType)).append(',').append(' ');
+    buf.append("dayCount").append('=').append(JodaBeanUtils.toString(dayCount)).append(',').append(' ');
+    buf.append("interpolator").append('=').append(JodaBeanUtils.toString(interpolator)).append(',').append(' ');
+    buf.append("extrapolatorLeft").append('=').append(JodaBeanUtils.toString(extrapolatorLeft)).append(',').append(' ');
+    buf.append("extrapolatorRight").append('=').append(JodaBeanUtils.toString(extrapolatorRight));
     buf.append('}');
     return buf.toString();
   }

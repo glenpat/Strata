@@ -17,6 +17,7 @@ import com.opengamma.strata.pricer.fx.RatesProviderFxDataSets;
 import com.opengamma.strata.pricer.rate.ImmutableRatesProvider;
 import com.opengamma.strata.pricer.sensitivity.RatesFiniteDifferenceSensitivityCalculator;
 import com.opengamma.strata.product.common.LongShort;
+import com.opengamma.strata.product.etd.EtdOptionType;
 import com.opengamma.strata.product.fx.ResolvedFxSingle;
 import com.opengamma.strata.product.fxopt.ResolvedFxDigitalOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
@@ -158,6 +159,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .strikePrice(strikeRate)
         .expiry(expiryDateTime)
         .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.EUROPEAN)
         .longShort(LongShort.LONG)
         .build();
     final ResolvedFxDigitalOption downDigital = ResolvedFxDigitalOption.builder()
@@ -166,6 +168,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .strikePrice(strikeRate)
         .expiry(expiryDateTime)
         .barrierType(BarrierType.DOWN)
+        .optionType(EtdOptionType.EUROPEAN)
         .longShort(LongShort.LONG)
         .build();
 
