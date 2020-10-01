@@ -6,6 +6,7 @@
 package com.opengamma.strata.product.index.type;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 import org.joda.convert.FromString;
 import org.joda.convert.ToString;
@@ -18,6 +19,7 @@ import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.collect.named.ExtendedEnum;
 import com.opengamma.strata.collect.named.Named;
 import com.opengamma.strata.product.SecurityId;
+import com.opengamma.strata.product.index.IborFuturePosition;
 import com.opengamma.strata.product.index.IborFutureTrade;
 
 /**
@@ -83,10 +85,11 @@ public interface IborFutureContractSpec
    * Creates a trade based on this convention.
    * <p>
    * This returns a trade based on the instructions in the {@link SequenceDate}.
+   * The sequence date points at the expiry of the future, which is how they are referred to in the market.
    * 
    * @param tradeDate  the trade date
    * @param securityId  the identifier of the security
-   * @param sequenceDate  the date to be used from the sequence 
+   * @param sequenceDate  the date to be used from the sequence identifying the expiry of the future
    * @param quantity  the number of contracts traded, positive if buying, negative if selling
    * @param price  the trade price of the future
    * @param refData  the reference data, used to resolve the trade dates
@@ -99,6 +102,23 @@ public interface IborFutureContractSpec
       SequenceDate sequenceDate,
       double quantity,
       double price,
+      ReferenceData refData);
+
+  //-------------------------------------------------------------------------
+  /**
+   * Creates a position based on this convention.
+   *
+   * @param securityId  the identifier of the security
+   * @param expiry  the expiry year month
+   * @param quantity  the number of contracts traded, positive if buying, negative if selling
+   * @param refData  the reference data, used to resolve the trade dates
+   * @return the position
+   * @throws ReferenceDataNotFoundException if an identifier cannot be resolved in the reference data
+   */
+  public abstract IborFuturePosition createPosition(
+      SecurityId securityId,
+      YearMonth expiry,
+      double quantity,
       ReferenceData refData);
 
   //-------------------------------------------------------------------------
