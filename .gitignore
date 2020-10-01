@@ -17,6 +17,7 @@ tests/output/
 test-output/
 .DS_Store
 TempTest.java
+.gradle/
 
 # IntelliJ config files
 *.iws
