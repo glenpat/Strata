@@ -5,16 +5,12 @@
  */
 package com.opengamma.strata.product.fxopt;
 
-import static com.opengamma.strata.collect.ArgChecker.inOrderOrEqual;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import com.opengamma.strata.basics.ReferenceData;
+import com.opengamma.strata.basics.Resolvable;
+import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.product.common.LongShort;
+import com.opengamma.strata.product.fx.FxOption;
+import com.opengamma.strata.product.fx.FxSingle;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
 import org.joda.beans.JodaBeanUtils;
@@ -28,12 +24,15 @@ import org.joda.beans.impl.direct.DirectMetaBean;
 import org.joda.beans.impl.direct.DirectMetaProperty;
 import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 
-import com.opengamma.strata.basics.ReferenceData;
-import com.opengamma.strata.basics.Resolvable;
-import com.opengamma.strata.basics.currency.CurrencyPair;
-import com.opengamma.strata.product.common.LongShort;
-import com.opengamma.strata.product.fx.FxProduct;
-import com.opengamma.strata.product.fx.FxSingle;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import static com.opengamma.strata.collect.ArgChecker.inOrderOrEqual;
 
 /**
  * A vanilla FX option.
@@ -46,7 +45,7 @@ import com.opengamma.strata.product.fx.FxSingle;
  */
 @BeanDefinition
 public final class FxVanillaOption
-    implements FxProduct, Resolvable<ResolvedFxVanillaOption>, ImmutableBean, Serializable {
+    implements FxOption, Resolvable<ResolvedFxVanillaOption>, ImmutableBean, Serializable {
 
   /**
    * Whether the option is long or short.
@@ -88,7 +87,7 @@ public final class FxVanillaOption
   //-------------------------------------------------------------------------
   @ImmutableValidator
   private void validate() {
-    inOrderOrEqual(expiryDate, underlying.getPaymentDate(), "expiryDate", "underlying.paymentDate");
+    inOrderOrEqual(this.expiryDate, this.underlying.getPaymentDate(), "expiryDate", "underlying.paymentDate");
   }
 
   //-------------------------------------------------------------------------
@@ -101,7 +100,7 @@ public final class FxVanillaOption
    */
   @Override
   public CurrencyPair getCurrencyPair() {
-    return underlying.getCurrencyPair();
+    return this.underlying.getCurrencyPair();
   }
 
   /**
@@ -114,16 +113,16 @@ public final class FxVanillaOption
    * @return the expiry date and time
    */
   public ZonedDateTime getExpiry() {
-    return expiryDate.atTime(expiryTime).atZone(expiryZone);
+    return this.expiryDate.atTime(this.expiryTime).atZone(this.expiryZone);
   }
 
   //-------------------------------------------------------------------------
   @Override
   public ResolvedFxVanillaOption resolve(ReferenceData refData) {
     return ResolvedFxVanillaOption.builder()
-        .longShort(longShort)
+        .longShort(this.longShort)
         .expiry(getExpiry())
-        .underlying(underlying.resolve(refData))
+        .underlying(this.underlying.resolve(refData))
         .build();
   }
 

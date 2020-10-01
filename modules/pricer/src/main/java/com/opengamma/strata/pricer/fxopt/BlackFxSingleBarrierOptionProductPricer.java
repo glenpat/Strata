@@ -8,6 +8,7 @@ package com.opengamma.strata.pricer.fxopt;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.currency.FxRateProvider;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.value.ValueDerivatives;
 import com.opengamma.strata.collect.ArgChecker;
@@ -20,6 +21,7 @@ import com.opengamma.strata.pricer.impl.option.BlackOneTouchAssetPriceFormulaRep
 import com.opengamma.strata.pricer.impl.option.BlackOneTouchCashPriceFormulaRepository;
 import com.opengamma.strata.pricer.rate.RatesProvider;
 import com.opengamma.strata.product.fx.ResolvedFxSingle;
+import com.opengamma.strata.product.fxopt.ResolvedFxOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
 import com.opengamma.strata.product.option.SimpleConstantContinuousBarrier;
@@ -75,13 +77,23 @@ public class BlackFxSingleBarrierOptionProductPricer {
    * @return the present value of the product
    */
   public CurrencyAmount presentValue(
-      ResolvedFxSingleBarrierOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
     double price = price(option, ratesProvider, volatilities);
-    ResolvedFxVanillaOption underlyingOption = option.getUnderlyingOption();
-    return CurrencyAmount.of(underlyingOption.getCounterCurrency(), signedNotional(underlyingOption) * price);
+    return option.getSignedNotional().convertedTo(option.getCurrencyPair().getCounter(), FxRateProvider.noConversion())
+        .multipliedBy(price);
+  }
+
+  public double price(
+      ResolvedFxOption option,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+    if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
+      return price((ResolvedFxSingleBarrierOption) option, ratesProvider, volatilities);
+    }
+    throw new IllegalArgumentException("not implemented");
   }
 
   /**
@@ -92,7 +104,7 @@ public class BlackFxSingleBarrierOptionProductPricer {
    * See {@link #presentValue} for scaling and currency.
    * <p>
    * The volatility used in this computation is the Black implied volatility at expiry time and strike.
-   * 
+   *
    * @param option  the option product
    * @param ratesProvider  the rates provider
    * @param volatilities  the Black volatility provider
@@ -131,14 +143,27 @@ public class BlackFxSingleBarrierOptionProductPricer {
     if (option.getRebate().isPresent()) {
       CurrencyAmount rebate = option.getRebate().get();
       double priceRebate = rebate.getCurrency().equals(ccyCounter) ?
-          CASH_REBATE_PRICER.price(todayFx, timeToExpiry, costOfCarry, rateCounter, volatility, barrier.inverseKnockType()) :
-          ASSET_REBATE_PRICER.price(todayFx, timeToExpiry, costOfCarry, rateCounter, volatility, barrier.inverseKnockType());
+          CASH_REBATE_PRICER
+              .price(todayFx, timeToExpiry, costOfCarry, rateCounter, volatility, barrier.inverseKnockType()) :
+          ASSET_REBATE_PRICER
+              .price(todayFx, timeToExpiry, costOfCarry, rateCounter, volatility, barrier.inverseKnockType());
       price += priceRebate * rebate.getAmount() / Math.abs(underlyingFx.getBaseCurrencyPayment().getAmount());
     }
     return price;
   }
 
   //-------------------------------------------------------------------------
+  public PointSensitivityBuilder presentValueSensitivityRatesStickyStrike(
+      ResolvedFxOption option,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+    if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
+      return presentValueSensitivityRatesStickyStrike((ResolvedFxSingleBarrierOption) option, ratesProvider,
+          volatilities);
+    }
+    throw new IllegalArgumentException("not implemented");
+  }
+
   /**
    * Calculates the present value sensitivity of the FX barrier option product.
    * <p>
@@ -146,7 +171,7 @@ public class BlackFxSingleBarrierOptionProductPricer {
    * the underlying curves.
    * <p>
    * The volatility is fixed in this sensitivity computation, i.e., sticky-strike.
-   * 
+   *
    * @param option  the option product
    * @param ratesProvider  the rates provider
    * @param volatilities  the Black volatility provider
@@ -265,11 +290,22 @@ public class BlackFxSingleBarrierOptionProductPricer {
   }
 
   //-------------------------------------------------------------------------
+  public PointSensitivityBuilder presentValueSensitivityModelParamsVolatility(
+      ResolvedFxOption option,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+    if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
+      return presentValueSensitivityModelParamsVolatility((ResolvedFxSingleBarrierOption) option, ratesProvider,
+          volatilities);
+    }
+    throw new IllegalArgumentException("not implemented");
+  }
+
   /**
    * Computes the present value sensitivity to the black volatility used in the pricing.
    * <p>
    * The result is a single sensitivity to the volatility used. This is also called Black vega.
-   * 
+   *
    * @param option  the option product
    * @param ratesProvider  the rates provider
    * @param volatilities  the Black volatility provider
@@ -372,26 +408,36 @@ public class BlackFxSingleBarrierOptionProductPricer {
    * @return the currency exposure
    */
   public MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOption option,
+      ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities) {
 
-    ResolvedFxVanillaOption underlyingOption = option.getUnderlyingOption();
-    if (volatilities.relativeTime(underlyingOption.getExpiry()) < 0d) {
+    if (volatilities.relativeTime(option.getExpiry()) < 0d) {
       return MultiCurrencyAmount.empty();
     }
     ValueDerivatives priceDerivatives = priceDerivatives(option, ratesProvider, volatilities);
     double price = priceDerivatives.getValue();
     double delta = priceDerivatives.getDerivative(0);
-    CurrencyPair currencyPair = underlyingOption.getUnderlying().getCurrencyPair();
+    CurrencyPair currencyPair = option.getCurrencyPair();
     double todayFx = ratesProvider.fxRate(currencyPair);
-    double signedNotional = signedNotional(underlyingOption);
+    double signedNotional =
+        option.getSignedNotional().convertedTo(currencyPair.getCounter(), FxRateProvider.noConversion()).getAmount();
     CurrencyAmount domestic = CurrencyAmount.of(currencyPair.getCounter(), (price - delta * todayFx) * signedNotional);
     CurrencyAmount foreign = CurrencyAmount.of(currencyPair.getBase(), delta * signedNotional);
     return MultiCurrencyAmount.of(domestic, foreign);
   }
 
   //-------------------------------------------------------------------------
+  private ValueDerivatives priceDerivatives(
+      ResolvedFxOption option,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+    if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
+      return priceDerivatives((ResolvedFxSingleBarrierOption) option, ratesProvider, volatilities);
+    }
+    throw new IllegalArgumentException("not implemented");
+  }
+
   //  The derivatives are [0] spot, [1] strike, [2] rate, [3] cost-of-carry, [4] volatility, [5] timeToExpiry, [6] spot twice
   private ValueDerivatives priceDerivatives(
       ResolvedFxSingleBarrierOption option,

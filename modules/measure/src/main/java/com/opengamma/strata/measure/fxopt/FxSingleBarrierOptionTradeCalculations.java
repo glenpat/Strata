@@ -18,9 +18,11 @@ import com.opengamma.strata.pricer.fxopt.FxOptionVolatilities;
 import com.opengamma.strata.pricer.fxopt.ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer;
 import com.opengamma.strata.pricer.rate.RatesProvider;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOptionTrade;
+import com.opengamma.strata.product.fxopt.ResolvedFxOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
 
 /**
+ * <PF>updated w/ generic support for FxOption (vanillas, digitals, barrier, one-touch)</PF>
  * Calculates pricing and risk measures for FX single barrier option trades.
  * <p>
  * This provides a high-level entry point for FX single barrier option pricing and risk measures.
@@ -71,13 +73,13 @@ public class FxSingleBarrierOptionTradeCalculations {
    * @return the present value, one entry per scenario
    */
   public MultiCurrencyScenarioArray presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesMarketDataLookup ratesLookup,
       FxOptionMarketDataLookup fxLookup,
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.presentValue(
+    return this.calc.presentValue(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -94,12 +96,12 @@ public class FxSingleBarrierOptionTradeCalculations {
    * @return the present value
    */
   public MultiCurrencyAmount presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.presentValue(trade, ratesProvider, volatilities, method);
+    return this.calc.presentValue(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -117,13 +119,13 @@ public class FxSingleBarrierOptionTradeCalculations {
    * @return the present value sensitivity, one entry per scenario
    */
   public MultiCurrencyScenarioArray pv01RatesCalibratedSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesMarketDataLookup ratesLookup,
       FxOptionMarketDataLookup fxLookup,
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesCalibratedSum(
+    return this.calc.pv01RatesCalibratedSum(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -143,12 +145,12 @@ public class FxSingleBarrierOptionTradeCalculations {
    * @return the present value sensitivity
    */
   public MultiCurrencyAmount pv01RatesCalibratedSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesCalibratedSum(trade, ratesProvider, volatilities, method);
+    return this.calc.pv01RatesCalibratedSum(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -166,13 +168,13 @@ public class FxSingleBarrierOptionTradeCalculations {
    * @return the present value sensitivity, one entry per scenario
    */
   public ScenarioArray<CurrencyParameterSensitivities> pv01RatesCalibratedBucketed(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesMarketDataLookup ratesLookup,
       FxOptionMarketDataLookup fxLookup,
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesCalibratedBucketed(
+    return this.calc.pv01RatesCalibratedBucketed(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -197,7 +199,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesCalibratedBucketed(trade, ratesProvider, volatilities, method);
+    return this.calc.pv01RatesCalibratedBucketed(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -222,7 +224,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesMarketQuoteSum(
+    return this.calc.pv01RatesMarketQuoteSum(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -248,7 +250,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesMarketQuoteSum(trade, ratesProvider, volatilities, method);
+    return this.calc.pv01RatesMarketQuoteSum(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -273,7 +275,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesMarketQuoteBucketed(
+    return this.calc.pv01RatesMarketQuoteBucketed(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -299,7 +301,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.pv01RatesMarketQuoteBucketed(trade, ratesProvider, volatilities, method);
+    return this.calc.pv01RatesMarketQuoteBucketed(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -322,7 +324,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.currencyExposure(
+    return this.calc.currencyExposure(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -346,7 +348,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.currencyExposure(trade, ratesProvider, volatilities, method);
+    return this.calc.currencyExposure(trade, ratesProvider, volatilities, method);
   }
 
   //-------------------------------------------------------------------------
@@ -369,7 +371,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       ScenarioMarketData marketData,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.currentCash(
+    return this.calc.currentCash(
         trade,
         ratesLookup.marketDataView(marketData),
         fxLookup.marketDataView(marketData),
@@ -393,7 +395,7 @@ public class FxSingleBarrierOptionTradeCalculations {
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
-    return calc.currentCash(trade, ratesProvider.getValuationDate(), method);
+    return this.calc.currentCash(trade, ratesProvider.getValuationDate(), method);
   }
 
 }

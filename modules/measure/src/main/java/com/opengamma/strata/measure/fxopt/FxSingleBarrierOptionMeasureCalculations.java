@@ -5,8 +5,6 @@
  */
 package com.opengamma.strata.measure.fxopt;
 
-import java.time.LocalDate;
-
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
@@ -23,9 +21,12 @@ import com.opengamma.strata.pricer.fxopt.FxOptionVolatilities;
 import com.opengamma.strata.pricer.fxopt.ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer;
 import com.opengamma.strata.pricer.rate.RatesProvider;
 import com.opengamma.strata.pricer.sensitivity.MarketQuoteSensitivityCalculator;
-import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
+import com.opengamma.strata.product.fxopt.ResolvedFxOptionTrade;
+
+import java.time.LocalDate;
 
 /**
+ * <PF>updated w/ generic support for FxOption (vanillas, digitals, barrier, one-touch)</PF>
  * Multi-scenario measure calculations for FX single barrier option trades.
  * <p>
  * Each method corresponds to a measure, typically calculated by one or more calls to the pricer.
@@ -48,19 +49,19 @@ final class FxSingleBarrierOptionMeasureCalculations {
   private static final double ONE_BASIS_POINT = 1e-4;
 
   /**
-   * Pricer for {@link ResolvedFxSingleBarrierOptionTrade}.
+   * Pricer for {@link ResolvedFxOptionTrade}.
    */
   private final BlackFxSingleBarrierOptionTradePricer blackPricer;
   /**
-   * Pricer for {@link ResolvedFxSingleBarrierOptionTrade}.
+   * Pricer for {@link ResolvedFxOptionTrade}.
    */
   private final ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer trinomialTreePricer;
 
   /**
    * Creates an instance.
-   * 
-   * @param blackPricer  the pricer for {@link ResolvedFxSingleBarrierOptionTrade}
-   * @param trinomialTreePricer  the pricer for {@link ResolvedFxSingleBarrierOptionTrade} SABR
+   *
+   * @param blackPricer  the pricer for {@link ResolvedFxOptionTrade}
+   * @param trinomialTreePricer  the pricer for {@link ResolvedFxOptionTrade} SABR
    */
   FxSingleBarrierOptionMeasureCalculations(
       BlackFxSingleBarrierOptionTradePricer blackPricer,
@@ -72,7 +73,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
   //-------------------------------------------------------------------------
   // calculates present value for all scenarios
   MultiCurrencyScenarioArray presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -89,22 +90,22 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // present value for one scenario
   MultiCurrencyAmount presentValue(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
     if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
-      return trinomialTreePricer.presentValue(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
+      return this.trinomialTreePricer.presentValue(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
     } else {
-      return blackPricer.presentValue(trade, ratesProvider, checkBlackVolatilities(volatilities));
+      return this.blackPricer.presentValue(trade, ratesProvider, checkBlackVolatilities(volatilities));
     }
   }
 
   //-------------------------------------------------------------------------
   // calculates calibrated sum PV01 for all scenarios
   MultiCurrencyScenarioArray pv01RatesCalibratedSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -121,7 +122,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // calibrated sum PV01 for one scenario
   MultiCurrencyAmount pv01RatesCalibratedSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
@@ -133,7 +134,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
   //-------------------------------------------------------------------------
   // calculates calibrated bucketed PV01 for all scenarios
   ScenarioArray<CurrencyParameterSensitivities> pv01RatesCalibratedBucketed(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -150,7 +151,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // calibrated bucketed PV01 for one scenario
   CurrencyParameterSensitivities pv01RatesCalibratedBucketed(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
@@ -162,7 +163,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
   //-------------------------------------------------------------------------
   // calculates market quote sum PV01 for all scenarios
   MultiCurrencyScenarioArray pv01RatesMarketQuoteSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -179,7 +180,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // market quote sum PV01 for one scenario
   MultiCurrencyAmount pv01RatesMarketQuoteSum(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
@@ -191,7 +192,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
   //-------------------------------------------------------------------------
   // calculates market quote bucketed PV01 for all scenarios
   ScenarioArray<CurrencyParameterSensitivities> pv01RatesMarketQuoteBucketed(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -208,7 +209,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // market quote bucketed PV01 for one scenario
   CurrencyParameterSensitivities pv01RatesMarketQuoteBucketed(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
@@ -219,16 +220,16 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // point sensitivity
   private CurrencyParameterSensitivities parameterSensitivities(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
     if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
-      return trinomialTreePricer.presentValueSensitivityRates(
+      return this.trinomialTreePricer.presentValueSensitivityRates(
           trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
     } else {
-      PointSensitivities pointSens = blackPricer.presentValueSensitivityRatesStickyStrike(
+      PointSensitivities pointSens = this.blackPricer.presentValueSensitivityRatesStickyStrike(
           trade, ratesProvider, checkBlackVolatilities(volatilities));
       return ratesProvider.parameterSensitivity(pointSens);
     }
@@ -237,7 +238,7 @@ final class FxSingleBarrierOptionMeasureCalculations {
   //-------------------------------------------------------------------------
   // calculates currency exposure for all scenarios
   MultiCurrencyScenarioArray currencyExposure(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -254,22 +255,23 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // currency exposure for one scenario
   MultiCurrencyAmount currencyExposure(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesProvider ratesProvider,
       FxOptionVolatilities volatilities,
       FxSingleBarrierOptionMethod method) {
 
     if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
-      return trinomialTreePricer.currencyExposure(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
+      return this.trinomialTreePricer
+          .currencyExposure(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
     } else {
-      return blackPricer.currencyExposure(trade, ratesProvider, checkBlackVolatilities(volatilities));
+      return this.blackPricer.currencyExposure(trade, ratesProvider, checkBlackVolatilities(volatilities));
     }
   }
 
   //-------------------------------------------------------------------------
   // calculates current cash for all scenarios
   CurrencyScenarioArray currentCash(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       RatesScenarioMarketData ratesMarketData,
       FxOptionScenarioMarketData optionMarketData,
       FxSingleBarrierOptionMethod method) {
@@ -284,14 +286,14 @@ final class FxSingleBarrierOptionMeasureCalculations {
 
   // current cash for one scenario
   CurrencyAmount currentCash(
-      ResolvedFxSingleBarrierOptionTrade trade,
+      ResolvedFxOptionTrade trade,
       LocalDate valuationDate,
       FxSingleBarrierOptionMethod method) {
 
     if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
-      return trinomialTreePricer.currentCash(trade, valuationDate);
+      return this.trinomialTreePricer.currentCash(trade, valuationDate);
     } else {
-      return blackPricer.currentCash(trade, valuationDate);
+      return this.blackPricer.currentCash(trade, valuationDate);
     }
   }
 

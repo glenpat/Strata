@@ -5,25 +5,9 @@
  */
 package com.opengamma.strata.examples.marketdata;
 
-import static com.opengamma.strata.collect.Guavate.toImmutableList;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
+import com.opengamma.strata.basics.currency.Crypto;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.FxRate;
 import com.opengamma.strata.collect.Messages;
@@ -40,6 +24,22 @@ import com.opengamma.strata.market.curve.CurveId;
 import com.opengamma.strata.market.curve.RatesCurveGroup;
 import com.opengamma.strata.market.observable.QuoteId;
 import com.opengamma.strata.measure.rate.RatesMarketDataLookup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import static com.opengamma.strata.collect.Guavate.toImmutableList;
 
 /**
  * Builds a market data snapshot from user-editable files in a prescribed directory structure.
@@ -285,6 +285,8 @@ public abstract class ExampleMarketDataBuilder {
   private void loadFxRates(ImmutableMarketDataBuilder builder) {
     // TODO - load from CSV file - format to be defined
     builder.addValue(FxRateId.of(Currency.GBP, Currency.USD), FxRate.of(Currency.GBP, Currency.USD, 1.61));
+    //  <PF>added</PF>
+    builder.addValue(FxRateId.of(Crypto.BTC, Currency.USD), FxRate.of(Crypto.BTC, Currency.USD, 10500));
   }
 
   //-------------------------------------------------------------------------

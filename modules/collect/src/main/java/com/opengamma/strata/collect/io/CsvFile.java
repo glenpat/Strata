@@ -101,8 +101,13 @@ public final class CsvFile {
    */
   public static CsvFile of(CharSource source, boolean headerRow, char separator) {
     ArgChecker.notNull(source, "source");
-    List<String> lines = Unchecked.wrap(() -> source.readLines());
-    return create(lines, headerRow, separator);
+    try {
+      List<String> lines = Unchecked.wrap(() -> source.readLines());
+      return create(lines, headerRow, separator);
+    } catch (final UncheckedIOException e) {
+      System.out.println("user.dir=" + System.getProperty("user.dir"));
+      throw e;
+    }
   }
 
   /**

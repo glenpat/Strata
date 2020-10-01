@@ -5,12 +5,6 @@
  */
 package com.opengamma.strata.examples;
 
-import static com.opengamma.strata.basics.currency.Currency.GBP;
-import static com.opengamma.strata.basics.currency.Currency.USD;
-
-import java.time.LocalDate;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.StandardId;
@@ -41,6 +35,12 @@ import com.opengamma.strata.product.payment.BulletPaymentTrade;
 import com.opengamma.strata.report.ReportCalculationResults;
 import com.opengamma.strata.report.trade.TradeReport;
 import com.opengamma.strata.report.trade.TradeReportTemplate;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static com.opengamma.strata.basics.currency.Currency.GBP;
+import static com.opengamma.strata.basics.currency.Currency.USD;
 
 /**
  * Example to illustrate using the engine to price FX trades.

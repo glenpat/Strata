@@ -8,6 +8,10 @@ package com.opengamma.strata.product;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.currency.Currency;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Random;
 
 /**
  * A security that can be traded.
@@ -23,8 +27,8 @@ import com.opengamma.strata.basics.currency.Currency;
  * <p>
  * Implementations of this interface must be immutable beans.
  */
+@Document(collection = "security")
 public interface Security {
-
   /**
    * Gets the standard security information.
    * <p>

@@ -13,13 +13,17 @@ import com.opengamma.strata.product.SecuritizedProduct;
 import com.opengamma.strata.product.Security;
 import com.opengamma.strata.product.SecurityId;
 import com.opengamma.strata.product.SecurityInfo;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * An instrument representing an exchange traded derivative (ETD).
  */
+@Document(collection = "security")
 public interface EtdSecurity
     extends Security, SecuritizedProduct {
 
+  @Id
   @Override
   public default SecurityId getSecurityId() {
     return Security.super.getSecurityId();

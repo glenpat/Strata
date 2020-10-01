@@ -22,11 +22,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharSource;
 import com.google.common.math.DoubleMath;
 import com.opengamma.strata.basics.StandardId;
+import com.opengamma.strata.basics.date.SequenceDate;
 import com.opengamma.strata.basics.date.Tenor;
 import com.opengamma.strata.collect.Messages;
 import com.opengamma.strata.collect.io.CsvFile;
@@ -52,6 +54,7 @@ import com.opengamma.strata.market.curve.node.FxSwapCurveNode;
 import com.opengamma.strata.market.curve.node.IborFixingDepositCurveNode;
 import com.opengamma.strata.market.curve.node.IborFutureCurveNode;
 import com.opengamma.strata.market.curve.node.IborIborSwapCurveNode;
+import com.opengamma.strata.market.curve.node.OvernightFutureCurveNode;
 import com.opengamma.strata.market.curve.node.OvernightIborSwapCurveNode;
 import com.opengamma.strata.market.curve.node.TermDepositCurveNode;
 import com.opengamma.strata.market.curve.node.ThreeLegBasisSwapCurveNode;
@@ -65,8 +68,10 @@ import com.opengamma.strata.product.fra.type.FraConvention;
 import com.opengamma.strata.product.fra.type.FraTemplate;
 import com.opengamma.strata.product.fx.type.FxSwapConvention;
 import com.opengamma.strata.product.fx.type.FxSwapTemplate;
-import com.opengamma.strata.product.index.type.IborFutureConvention;
+import com.opengamma.strata.product.index.type.IborFutureContractSpec;
 import com.opengamma.strata.product.index.type.IborFutureTemplate;
+import com.opengamma.strata.product.index.type.OvernightFutureContractSpec;
+import com.opengamma.strata.product.index.type.OvernightFutureTemplate;
 import com.opengamma.strata.product.swap.type.FixedIborSwapConvention;
 import com.opengamma.strata.product.swap.type.FixedIborSwapTemplate;
 import com.opengamma.strata.product.swap.type.FixedInflationSwapConvention;
@@ -156,7 +161,7 @@ public final class RatesCalibrationCsvLoader {
   private static final Pattern FRA_TIME_REGEX = Pattern.compile("P?+([0-9]++)M?+ ?+X ?+P?+([0-9]++)M?+");
   // Regex to parse future time string
   private static final Pattern FUT_TIME_REGEX =
-      Pattern.compile("P?+((?:[0-9]++D)?+(?:[0-9]++W)?+(?:[0-9]++M)?+) ?+[+] ?+([0-9]++)");
+      Pattern.compile("P?+((?:[0-9]++D)?+(?:[0-9]++W)?+(?:[0-9]++M)?+) ?+[+] ?+([0-9]++)([BF]?)");
   // Regex to parse future month string
   private static final Pattern FUT_MONTH_REGEX = Pattern.compile("([A-Z]{3}[0-9]{2})");
   // Regex to parse simple time string with years, months and days
@@ -416,6 +421,9 @@ public final class RatesCalibrationCsvLoader {
     if ("IFU".equalsIgnoreCase(typeStr) || "IborFuture".equalsIgnoreCase(typeStr)) {
       return curveIborFutureCurveNode(conventionStr, timeStr, label, quoteId, spread, date, order);
     }
+    if ("ONF".equalsIgnoreCase(typeStr) || "OvernightFuture".equalsIgnoreCase(typeStr)) {
+      return curveOvernightFutureCurveNode(conventionStr, timeStr, label, quoteId, spread, date, order);
+    }
     if ("OIS".equalsIgnoreCase(typeStr) || "FixedOvernightSwap".equalsIgnoreCase(typeStr)) {
       return curveFixedOvernightCurveNode(conventionStr, timeStr, label, quoteId, spread, date, order);
     }
@@ -518,7 +526,9 @@ public final class RatesCalibrationCsvLoader {
         .build();
   }
 
-  private static CurveNode curveIborFutureCurveNode(
+  //-------------------------------------------------------------------------
+  @VisibleForTesting
+  static IborFutureCurveNode curveIborFutureCurveNode(
       String conventionStr,
       String timeStr,
       String label,
@@ -528,35 +538,72 @@ public final class RatesCalibrationCsvLoader {
       CurveNodeDateOrder order) {
 
     Matcher matcher = FUT_TIME_REGEX.matcher(timeStr.toUpperCase(Locale.ENGLISH));
+    Matcher matcher2 = FUT_MONTH_REGEX.matcher(timeStr.toUpperCase(Locale.ENGLISH));
+    SequenceDate seqDate = null;
     if (matcher.matches()) {
       Period periodToStart = Period.parse("P" + matcher.group(1));
       int sequenceNumber = Integer.parseInt(matcher.group(2));
-      IborFutureConvention convention = IborFutureConvention.of(conventionStr);
-      IborFutureTemplate template = IborFutureTemplate.of(periodToStart, sequenceNumber, convention);
-      return IborFutureCurveNode.builder()
-          .template(template)
-          .rateId(quoteId)
-          .additionalSpread(spread)
-          .label(label)
-          .date(date)
-          .dateOrder(order)
-          .build();
-    }
-    Matcher matcher2 = FUT_MONTH_REGEX.matcher(timeStr.toUpperCase(Locale.ENGLISH));
-    if (matcher2.matches()) {
+      String seqType = matcher.group(3);
+      if ("F".equals(seqType)) {
+        seqDate = SequenceDate.full(periodToStart, sequenceNumber);
+      } else {
+        seqDate = SequenceDate.base(periodToStart, sequenceNumber);
+      }
+    } else if (matcher2.matches()) {
       YearMonth yearMonth = YearMonth.parse(matcher2.group(1), YM_FORMATTER);
-      IborFutureConvention convention = IborFutureConvention.of(conventionStr);
-      IborFutureTemplate template = IborFutureTemplate.of(yearMonth, convention);
-      return IborFutureCurveNode.builder()
-          .template(template)
-          .rateId(quoteId)
-          .additionalSpread(spread)
-          .label(label)
-          .date(date)
-          .dateOrder(order)
-          .build();
+      seqDate = SequenceDate.base(yearMonth);
+    } else {
+      throw new IllegalArgumentException(Messages.format("Invalid time format for Ibor Future: {}", timeStr));
     }
-    throw new IllegalArgumentException(Messages.format("Invalid time format for Ibor Future: {}", timeStr));
+    IborFutureContractSpec contractSpec = IborFutureContractSpec.of(conventionStr);
+    IborFutureTemplate template = IborFutureTemplate.of(seqDate, contractSpec);
+    return IborFutureCurveNode.builder()
+        .template(template)
+        .rateId(quoteId)
+        .additionalSpread(spread)
+        .label(label)
+        .date(date)
+        .dateOrder(order)
+        .build();
+  }
+
+  private static CurveNode curveOvernightFutureCurveNode(
+      String conventionStr,
+      String timeStr,
+      String label,
+      QuoteId quoteId,
+      double spread,
+      CurveNodeDate date,
+      CurveNodeDateOrder order) {
+
+    Matcher matcher = FUT_TIME_REGEX.matcher(timeStr.toUpperCase(Locale.ENGLISH));
+    Matcher matcher2 = FUT_MONTH_REGEX.matcher(timeStr.toUpperCase(Locale.ENGLISH));
+    SequenceDate seqDate = null;
+    if (matcher.matches()) {
+      Period periodToStart = Period.parse("P" + matcher.group(1));
+      int sequenceNumber = Integer.parseInt(matcher.group(2));
+      String seqType = matcher.group(3);
+      if ("F".equals(seqType)) {
+        seqDate = SequenceDate.full(periodToStart, sequenceNumber);
+      } else {
+        seqDate = SequenceDate.base(periodToStart, sequenceNumber);
+      }
+    } else if (matcher2.matches()) {
+      YearMonth yearMonth = YearMonth.parse(matcher2.group(1), YM_FORMATTER);
+      seqDate = SequenceDate.base(yearMonth);
+    } else {
+      throw new IllegalArgumentException(Messages.format("Invalid time format for Overnight Future: {}", timeStr));
+    }
+    OvernightFutureContractSpec contractSpec = OvernightFutureContractSpec.of(conventionStr);
+    OvernightFutureTemplate template = OvernightFutureTemplate.of(seqDate, contractSpec);
+    return OvernightFutureCurveNode.builder()
+        .template(template)
+        .rateId(quoteId)
+        .additionalSpread(spread)
+        .label(label)
+        .date(date)
+        .dateOrder(order)
+        .build();
   }
 
   //-------------------------------------------------------------------------

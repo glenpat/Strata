@@ -5,19 +5,10 @@
  */
 package com.opengamma.strata.examples.marketdata;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.opengamma.strata.basics.StandardId;
+import com.opengamma.strata.basics.currency.Crypto;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.index.IborIndices;
 import com.opengamma.strata.basics.index.OvernightIndices;
@@ -32,6 +23,15 @@ import com.opengamma.strata.market.curve.CurveId;
 import com.opengamma.strata.market.curve.CurveName;
 import com.opengamma.strata.market.observable.IndexQuoteId;
 import com.opengamma.strata.market.observable.QuoteId;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Test {@link ExampleMarketDataBuilder}, {@link DirectoryMarketDataBuilder} and {@link JarMarketDataBuilder}.
@@ -55,11 +55,13 @@ public class ExampleMarketDataBuilderTest {
       IndexQuoteId.of(IborIndices.GBP_LIBOR_3M));
 
   private static final Set<MarketDataId<?>> VALUES = ImmutableSet.of(
+      CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("BTC-Disc")),
       CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("USD-Disc")),
       CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("GBP-Disc")),
       CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("USD-3ML")),
       CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("USD-6ML")),
       CurveId.of(DEFAULT_CURVE_GROUP, CurveName.of("GBP-3ML")),
+      FxRateId.of(Currency.USD, Crypto.BTC),
       FxRateId.of(Currency.USD, Currency.GBP),
       QuoteId.of(StandardId.of("OG-Future", "Eurex-FGBL-Mar14")),
       QuoteId.of(StandardId.of("OG-Future", "Eurex-FGBL-Mar14"), FieldName.SETTLEMENT_PRICE),

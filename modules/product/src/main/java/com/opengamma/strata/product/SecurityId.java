@@ -14,6 +14,7 @@ import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.ReferenceDataId;
 import com.opengamma.strata.basics.StandardId;
 import com.opengamma.strata.collect.ArgChecker;
+import org.springframework.data.annotation.Persistent;
 
 /**
  * An identifier for a security.
@@ -26,12 +27,13 @@ import com.opengamma.strata.collect.ArgChecker;
  * unique for the reference data lookup. As such, it is acceptable to use
  * an identifier from a well-known global or vendor symbology.
  */
+@Persistent
 public final class SecurityId
     implements ReferenceDataId<Security>, Serializable {
 
   /** Serialization version. */
   private static final long serialVersionUID = 1L;
-
+  /**  did my added comment show up??  fuck! **/
   /**
    * The identifier, expressed as a standard two-part identifier.
    */

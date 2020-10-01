@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Information about a security.
@@ -35,6 +36,7 @@ import com.opengamma.strata.basics.currency.CurrencyAmount;
  * This provides common information about a security.
  * This includes the identifier, information about the price and an extensible data map.
  */
+@Document("securityInfo")
 @BeanDefinition(builderScope = "private", constructorScope = "package")
 public final class SecurityInfo
     implements Attributes, ImmutableBean, Serializable {

@@ -5,20 +5,6 @@
  */
 package com.opengamma.strata.loader.csv;
 
-import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.joda.beans.ImmutableBean;
-import org.joda.beans.JodaBeanUtils;
-import org.joda.beans.MetaBean;
-import org.joda.beans.TypedMetaBean;
-import org.joda.beans.gen.BeanDefinition;
-import org.joda.beans.gen.PropertyDefinition;
-import org.joda.beans.impl.light.LightMetaBean;
-
 import com.opengamma.strata.basics.date.DayCount;
 import com.opengamma.strata.collect.array.DoubleArray;
 import com.opengamma.strata.market.ValueType;
@@ -32,6 +18,19 @@ import com.opengamma.strata.market.curve.interpolator.CurveExtrapolator;
 import com.opengamma.strata.market.curve.interpolator.CurveInterpolator;
 import com.opengamma.strata.market.param.LabelDateParameterMetadata;
 import com.opengamma.strata.market.param.ParameterMetadata;
+import org.joda.beans.ImmutableBean;
+import org.joda.beans.JodaBeanUtils;
+import org.joda.beans.MetaBean;
+import org.joda.beans.TypedMetaBean;
+import org.joda.beans.gen.BeanDefinition;
+import org.joda.beans.gen.PropertyDefinition;
+import org.joda.beans.impl.light.LightMetaBean;
+
+import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Represents curve settings, used when loading curves.
@@ -116,7 +115,7 @@ final class LoadedCurveSettings
     List<ParameterMetadata> pointsMetadata = new ArrayList<>(nodes.size());
     for (int i = 0; i < nodes.size(); i++) {
       LoadedCurveNode point = nodes.get(i);
-      double yearFraction = dayCount.yearFraction(date, point.getDate());
+      double yearFraction = this.dayCount.yearFraction(date, point.getDate());
       xValues[i] = yearFraction;
       yValues[i] = point.getValue();
       ParameterMetadata pointMetadata = LabelDateParameterMetadata.of(point.getDate(), point.getLabel());
@@ -125,33 +124,33 @@ final class LoadedCurveSettings
 
     // create metadata
     CurveMetadata curveMetadata = DefaultCurveMetadata.builder()
-        .curveName(curveName)
-        .xValueType(xValueType)
-        .yValueType(yValueType)
-        .dayCount(dayCount)
+        .curveName(this.curveName)
+        .xValueType(this.xValueType)
+        .yValueType(this.yValueType)
+        .dayCount(this.dayCount)
         .parameterMetadata(pointsMetadata)
         .build();
     return InterpolatedNodalCurve.builder()
         .metadata(curveMetadata)
         .xValues(DoubleArray.copyOf(xValues))
         .yValues(DoubleArray.copyOf(yValues))
-        .interpolator(interpolator)
-        .extrapolatorLeft(extrapolatorLeft)
-        .extrapolatorRight(extrapolatorRight)
+        .interpolator(this.interpolator)
+        .extrapolatorLeft(this.extrapolatorLeft)
+        .extrapolatorRight(this.extrapolatorRight)
         .build();
   }
 
   // constructs an interpolated nodal curve definition
   InterpolatedNodalCurveDefinition createCurveDefinition(List<CurveNode> nodes) {
     return InterpolatedNodalCurveDefinition.builder()
-        .name(curveName)
-        .xValueType(xValueType)
-        .yValueType(yValueType)
-        .dayCount(dayCount)
+        .name(this.curveName)
+        .xValueType(this.xValueType)
+        .yValueType(this.yValueType)
+        .dayCount(this.dayCount)
         .nodes(nodes)
-        .interpolator(interpolator)
-        .extrapolatorLeft(extrapolatorLeft)
-        .extrapolatorRight(extrapolatorRight)
+        .interpolator(this.interpolator)
+        .extrapolatorLeft(this.extrapolatorLeft)
+        .extrapolatorRight(this.extrapolatorRight)
         .build();
   }
 

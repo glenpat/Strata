@@ -5,34 +5,38 @@
  */
 package com.opengamma.strata.pricer.fxopt;
 
-import static com.opengamma.strata.basics.currency.Currency.EUR;
-import static com.opengamma.strata.basics.currency.Currency.USD;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.data.Offset.offset;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-import org.junit.jupiter.api.Test;
-
 import com.opengamma.strata.basics.currency.CurrencyAmount;
+import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.basics.currency.Payment;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.market.param.CurrencyParameterSensitivities;
 import com.opengamma.strata.pricer.DiscountingPaymentPricer;
+import com.opengamma.strata.pricer.fx.FxForwardRates;
 import com.opengamma.strata.pricer.fx.RatesProviderFxDataSets;
 import com.opengamma.strata.pricer.rate.ImmutableRatesProvider;
 import com.opengamma.strata.pricer.sensitivity.RatesFiniteDifferenceSensitivityCalculator;
 import com.opengamma.strata.product.common.LongShort;
+import com.opengamma.strata.product.etd.EtdOptionType;
 import com.opengamma.strata.product.fx.ResolvedFxSingle;
+import com.opengamma.strata.product.fxopt.ResolvedFxDigitalOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
 import com.opengamma.strata.product.option.BarrierType;
 import com.opengamma.strata.product.option.KnockType;
 import com.opengamma.strata.product.option.SimpleConstantContinuousBarrier;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
+import static com.opengamma.strata.basics.currency.Currency.EUR;
+import static com.opengamma.strata.basics.currency.Currency.USD;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.data.Offset.offset;
 
 /**
  * Test {@link ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer}.
@@ -104,10 +108,100 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
 
   private static final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer PRICER_70 =
       new ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer(70);
+  private static final RecombiningTrinomialTreeData DATA_70 =
+      PRICER_70.getCalibrator().calibrateTrinomialTree(CALL, RATE_PROVIDER, VOLS);
   private static final RecombiningTrinomialTreeData DATA_70_FLAT =
       PRICER_70.getCalibrator().calibrateTrinomialTree(CALL, RATE_PROVIDER_FLAT, VOLS_FLAT);
-  private static final BlackFxSingleBarrierOptionProductPricer BLACK_PRICER = BlackFxSingleBarrierOptionProductPricer.DEFAULT;
+  private static final BlackFxSingleBarrierOptionProductPricer BLACK_PRICER =
+      BlackFxSingleBarrierOptionProductPricer.DEFAULT;
   private static final BlackFxVanillaOptionProductPricer VANILLA_PRICER = BlackFxVanillaOptionProductPricer.DEFAULT;
+
+  private static final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer PRICER_200 =
+      new ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer(200);
+  private static final RecombiningTrinomialTreeData DATA_200 =
+      PRICER_200.getCalibrator().calibrateTrinomialTree(CALL, RATE_PROVIDER, VOLS);
+
+  @Test
+  public void test_trinomial_pf() {
+
+    final LocalDate expiryDate = VAL_DATE.plusDays(500L);
+    final ZonedDateTime expiryDateTime = expiryDate.atStartOfDay(ZONE);
+
+    final ImmutableRatesProvider rp = RATE_PROVIDER_FLAT;
+    final BlackFxOptionSmileVolatilities vols = VOLS_FLAT; //VOLS;
+
+    final FxForwardRates fxForwardRates = rp.fxForwardRates(CurrencyPair.parse("EUR/USD"));
+    final double fwdRate = fxForwardRates.rate(EUR, expiryDate);
+
+    final double strikeRate = fwdRate;
+
+    final ResolvedFxSingle FX_PRODUCT =
+        ResolvedFxSingle
+            .of(CurrencyAmount.of(EUR, NOTIONAL), CurrencyAmount.of(USD, -NOTIONAL * strikeRate), expiryDate);
+    final ResolvedFxSingle FX_PRODUCT_INV = FX_PRODUCT.inverse();
+
+    final ResolvedFxVanillaOption call = ResolvedFxVanillaOption.builder()
+        .longShort(LongShort.LONG)
+        .expiry(expiryDateTime)
+        .underlying(FX_PRODUCT)
+        .build();
+    final ResolvedFxVanillaOption put = ResolvedFxVanillaOption.builder()
+        .longShort(LongShort.LONG)
+        .expiry(expiryDateTime)
+        .underlying(FX_PRODUCT_INV)
+        .build();
+
+    final FxIndex fxIndex = FxIndex.of("EUR/USD-ECB");
+
+    final ResolvedFxDigitalOption upDigital = ResolvedFxDigitalOption.builder()
+        .payment(CurrencyAmount.of(USD, 1000_000_000D))
+        .index(fxIndex)
+        .strikePrice(strikeRate)
+        .expiry(expiryDateTime)
+        .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.EUROPEAN)
+        .longShort(LongShort.LONG)
+        .build();
+    final ResolvedFxDigitalOption downDigital = ResolvedFxDigitalOption.builder()
+        .payment(CurrencyAmount.of(USD, 1000_000_000D))
+        .index(fxIndex)
+        .strikePrice(strikeRate)
+        .expiry(expiryDateTime)
+        .barrierType(BarrierType.DOWN)
+        .optionType(EtdOptionType.EUROPEAN)
+        .longShort(LongShort.LONG)
+        .build();
+
+    System.out.println("vanilla-----------");
+    double callPrice = VANILLA_PRICER.price(call, rp, vols);
+    double putPrice = VANILLA_PRICER.price(put, rp, vols);
+    System.out.println(callPrice);
+    System.out.println(putPrice);
+
+    final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer
+        pricer =
+        new ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer();
+
+    System.out.println("trinomial-----------");
+    double callPriceTri = pricer.price(call, rp, vols);
+    double putPriceTri = pricer.price(put, rp, vols);
+    System.out.println(callPriceTri);
+    System.out.println(putPriceTri);
+
+    System.out.println("digital-----------");
+    double callPriceDigital = pricer.price(upDigital, rp, vols);
+    double putPriceDigital = pricer.price(downDigital, rp, vols);
+    System.out.println(callPriceDigital);
+    System.out.println(putPriceDigital);
+
+    for (int i = 2; i < 50; i++) {
+      final ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer
+          p =
+          new ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer(i);
+      System.out
+          .println(i + " =>  " + p.price(call, rp, vols));
+    }
+  }
 
   @Test
   public void test_black() {
@@ -258,6 +352,27 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
       priceUkoPrev = priceUko;
       priceUkiPrev = priceUki;
     }
+  }
+
+  @Test
+  public void test_vanilla_trinomial() {
+    double tol = 1.0e-2;
+    double callPrice = VANILLA_PRICER.price(CALL, RATE_PROVIDER, VOLS);
+    double putPrice = VANILLA_PRICER.price(PUT, RATE_PROVIDER, VOLS);
+    double callPriceTree = PRICER_39.price(CALL, RATE_PROVIDER, VOLS, DATA_39);
+    double putPriceTree = PRICER_39.price(PUT, RATE_PROVIDER, VOLS, DATA_39);
+    assertEqualsRelative(callPriceTree, callPrice, tol);
+    assertEqualsRelative(putPriceTree, putPrice, tol);
+
+    double callPriceTree70 = PRICER_70.price(CALL, RATE_PROVIDER, VOLS, DATA_70);
+    double putPriceTree70 = PRICER_70.price(PUT, RATE_PROVIDER, VOLS, DATA_70);
+
+    double callPriceTree200 = PRICER_200.price(CALL, RATE_PROVIDER, VOLS, DATA_200);
+    double putPriceTree200 = PRICER_200.price(PUT, RATE_PROVIDER, VOLS, DATA_200);
+
+    //  why does 39 steps match but not 70?
+//    assertEqualsRelative(callPriceTree70, callPrice, tol);
+//    assertEqualsRelative(putPriceTree70, putPrice, tol);
   }
 
   @Test

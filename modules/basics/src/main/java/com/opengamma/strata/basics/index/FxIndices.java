@@ -20,6 +20,10 @@ public final class FxIndices {
    */
   static final ExtendedEnum<FxIndex> ENUM_LOOKUP = ExtendedEnum.of(FxIndex.class);
 
+  public static final FxIndex BTC_USD_HXRO = FxIndex.of("BTC/USD-HXRO");
+
+  public static final FxIndex ETH_USD_HXRO = FxIndex.of("ETH/USD-HXRO");
+
   /**
    * The FX index for conversion from EUR to CHF, as defined by the European Central Bank
    * "Euro foreign exchange reference rates".

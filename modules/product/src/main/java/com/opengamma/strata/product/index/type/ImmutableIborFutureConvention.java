@@ -42,7 +42,10 @@ import com.opengamma.strata.product.index.IborFutureTrade;
  * <p>
  * This defines the market convention for a future against a particular index.
  * In most cases, the index contains sufficient information to fully define the convention.
+ * 
+ * @deprecated Use {@link ImmutableIborFutureContractSpec}
  */
+@Deprecated
 @BeanDefinition
 public final class ImmutableIborFutureConvention
     implements IborFutureConvention, ImmutableBean, Serializable {

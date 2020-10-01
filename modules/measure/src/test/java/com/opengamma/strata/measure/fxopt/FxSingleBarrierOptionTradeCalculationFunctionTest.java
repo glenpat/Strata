@@ -5,21 +5,6 @@
  */
 package com.opengamma.strata.measure.fxopt;
 
-import static com.opengamma.strata.basics.currency.Currency.EUR;
-import static com.opengamma.strata.basics.currency.Currency.USD;
-import static com.opengamma.strata.basics.date.DayCounts.ACT_360;
-import static com.opengamma.strata.basics.date.DayCounts.ACT_365F;
-import static com.opengamma.strata.product.common.LongShort.SHORT;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -65,6 +50,20 @@ import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
 import com.opengamma.strata.product.option.BarrierType;
 import com.opengamma.strata.product.option.KnockType;
 import com.opengamma.strata.product.option.SimpleConstantContinuousBarrier;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Set;
+
+import static com.opengamma.strata.basics.currency.Currency.EUR;
+import static com.opengamma.strata.basics.currency.Currency.USD;
+import static com.opengamma.strata.basics.date.DayCounts.ACT_360;
+import static com.opengamma.strata.basics.date.DayCounts.ACT_365F;
+import static com.opengamma.strata.product.common.LongShort.SHORT;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test {@link FxSingleBarrierOptionTradeCalculationFunction}.
@@ -144,6 +143,19 @@ public class FxSingleBarrierOptionTradeCalculationFunctionTest {
   }
 
   @Test
+  public void test_requirementsAndCurrencyPF() {
+    FxOptionTradeCalculationFunction<FxSingleBarrierOptionTrade> function =
+        new FxOptionTradeCalculationFunction<>(FxSingleBarrierOptionTrade.class);
+    Set<Measure> measures = function.supportedMeasures();
+    FunctionRequirements reqs = function.requirements(TRADE, measures, PARAMS, REF_DATA);
+    assertThat(reqs.getOutputCurrencies()).containsExactly(EUR, USD);
+    assertThat(reqs.getValueRequirements()).isEqualTo(
+        ImmutableSet.of(DISCOUNT_CURVE_EUR_ID, DISCOUNT_CURVE_USD_ID, VOL_ID));
+    assertThat(reqs.getTimeSeriesRequirements()).isEmpty();
+    assertThat(function.naturalCurrency(TRADE, REF_DATA)).isEqualTo(EUR);
+  }
+
+  @Test
   public void test_simpleMeasures() {
     FxSingleBarrierOptionTradeCalculationFunction function = new FxSingleBarrierOptionTradeCalculationFunction();
     ScenarioMarketData md = marketData();
@@ -163,7 +175,37 @@ public class FxSingleBarrierOptionTradeCalculationFunctionTest {
         .containsEntry(
             Measures.PRESENT_VALUE, Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedPv))))
         .containsEntry(
-            Measures.CURRENCY_EXPOSURE, Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedCurrencyExp))))
+            Measures.CURRENCY_EXPOSURE,
+            Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedCurrencyExp))))
+        .containsEntry(
+            Measures.CURRENT_CASH, Result.success(CurrencyScenarioArray.of(ImmutableList.of(expectedCash))))
+        .containsEntry(
+            Measures.RESOLVED_TARGET, Result.success(RTRADE));
+  }
+
+  @Test
+  public void test_simpleMeasuresPF() {
+    FxOptionTradeCalculationFunction<FxSingleBarrierOptionTrade> function =
+        new FxOptionTradeCalculationFunction<>(FxSingleBarrierOptionTrade.class);
+    ScenarioMarketData md = marketData();
+    RatesProvider provider = RATES_LOOKUP.ratesProvider(md.scenario(0));
+    BlackFxSingleBarrierOptionTradePricer pricer = BlackFxSingleBarrierOptionTradePricer.DEFAULT;
+    MultiCurrencyAmount expectedPv = pricer.presentValue(RTRADE, provider, VOLS);
+    MultiCurrencyAmount expectedCurrencyExp = pricer.currencyExposure(RTRADE, provider, VOLS);
+    CurrencyAmount expectedCash = pricer.currentCash(RTRADE, VAL_DATE);
+
+    Set<Measure> measures = ImmutableSet.of(
+        Measures.PRESENT_VALUE,
+        Measures.PAR_SPREAD,
+        Measures.CURRENCY_EXPOSURE,
+        Measures.CURRENT_CASH,
+        Measures.RESOLVED_TARGET);
+    assertThat(function.calculate(TRADE, measures, PARAMS, md, REF_DATA))
+        .containsEntry(
+            Measures.PRESENT_VALUE, Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedPv))))
+        .containsEntry(
+            Measures.CURRENCY_EXPOSURE,
+            Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedCurrencyExp))))
         .containsEntry(
             Measures.CURRENT_CASH, Result.success(CurrencyScenarioArray.of(ImmutableList.of(expectedCash))))
         .containsEntry(
@@ -188,7 +230,31 @@ public class FxSingleBarrierOptionTradeCalculationFunctionTest {
         .containsEntry(
             Measures.PV01_CALIBRATED_SUM, Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedPv01))))
         .containsEntry(
-            Measures.PV01_CALIBRATED_BUCKETED, Result.success(ScenarioArray.of(ImmutableList.of(expectedBucketedPv01))));
+            Measures.PV01_CALIBRATED_BUCKETED,
+            Result.success(ScenarioArray.of(ImmutableList.of(expectedBucketedPv01))));
+  }
+
+  @Test
+  public void test_pv01PF() {
+    FxOptionTradeCalculationFunction<FxSingleBarrierOptionTrade> function =
+        new FxOptionTradeCalculationFunction<>(FxSingleBarrierOptionTrade.class);
+    ScenarioMarketData md = marketData();
+    RatesProvider provider = RATES_LOOKUP.ratesProvider(md.scenario(0));
+    BlackFxSingleBarrierOptionTradePricer pricer = BlackFxSingleBarrierOptionTradePricer.DEFAULT;
+    PointSensitivities pvPointSens = pricer.presentValueSensitivityRatesStickyStrike(RTRADE, provider, VOLS);
+    CurrencyParameterSensitivities pvParamSens = provider.parameterSensitivity(pvPointSens);
+    MultiCurrencyAmount expectedPv01 = pvParamSens.total().multipliedBy(1e-4);
+    CurrencyParameterSensitivities expectedBucketedPv01 = pvParamSens.multipliedBy(1e-4);
+
+    Set<Measure> measures = ImmutableSet.of(
+        Measures.PV01_CALIBRATED_SUM,
+        Measures.PV01_CALIBRATED_BUCKETED);
+    assertThat(function.calculate(TRADE, measures, PARAMS, md, REF_DATA))
+        .containsEntry(
+            Measures.PV01_CALIBRATED_SUM, Result.success(MultiCurrencyScenarioArray.of(ImmutableList.of(expectedPv01))))
+        .containsEntry(
+            Measures.PV01_CALIBRATED_BUCKETED,
+            Result.success(ScenarioArray.of(ImmutableList.of(expectedBucketedPv01))));
   }
 
   //-------------------------------------------------------------------------

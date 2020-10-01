@@ -27,6 +27,7 @@ import org.joda.beans.impl.direct.DirectPrivateBeanBuilder;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.collect.ArgChecker;
+import org.springframework.data.annotation.Persistent;
 
 /**
  * Defines the meaning of the security price.
@@ -47,6 +48,7 @@ import com.opengamma.strata.collect.ArgChecker;
  * The contract size is 1,000 barrels.
  * Therefore the tick value is 0.01 * 1,000 = 10 USD.
  */
+@Persistent
 @BeanDefinition(builderScope = "private")
 public final class SecurityPriceInfo
     implements ImmutableBean, Serializable {
