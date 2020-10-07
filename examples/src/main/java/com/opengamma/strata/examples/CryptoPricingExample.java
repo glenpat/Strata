@@ -106,6 +106,7 @@ public class CryptoPricingExample {
         FxOptionMarketDataLookup.of(fxIndex.getCurrencyPair(), VOL_ID1);
 
     CalculationRules rules = CalculationRules.of(functions,
+        Currency.USD,
         marketDataBuilder.ratesLookup(valuationDate),
         volLookup,
         FxSingleBarrierOptionMethod.TRINOMIAL_TREE
@@ -158,6 +159,32 @@ public class CryptoPricingExample {
         .expiryDate(expiryDate0)
         .expiryTime(LocalTime.of(12, 0))
         .expiryZone(ZoneId.of("UTC"))
+        .payment(CurrencyAmount.of(Currency.USD, 10_000))
+        .build();
+
+    return FxDigitalOptionTrade.builder()
+        .info(TradeInfo.builder()
+            .id(StandardId.of("example", "1"))
+            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
+            .counterparty(StandardId.of("example", "BigBankA"))
+            .settlementDate(tradeSettleDate)
+            .build())
+        .product(fxDigitalOption)
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
+        .build();
+  }
+
+  // create an FX Forward trade
+  private static Trade createTrade2() {
+    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
+        .longShort(LongShort.SHORT)
+        .barrierType(BarrierType.UP)
+        .optionType(EtdOptionType.EUROPEAN)
+        .index(fxIndex)
+        .strikePrice(11000)
+        .expiryDate(expiryDate0)
+        .expiryTime(LocalTime.of(12, 0))
+        .expiryZone(ZoneId.of("UTC"))
         .payment(CurrencyAmount.of(Currency.USD, -10_000))
         .build();
 
@@ -169,33 +196,7 @@ public class CryptoPricingExample {
             .settlementDate(tradeSettleDate)
             .build())
         .product(fxDigitalOption)
-        .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
-        .build();
-  }
-
-  // create an FX Forward trade
-  private static Trade createTrade2() {
-    final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.LONG)
-        .barrierType(BarrierType.UP)
-        .optionType(EtdOptionType.AMERICAN)
-        .index(fxIndex)
-        .strikePrice(11000)
-        .expiryDate(expiryDate0)
-        .expiryTime(LocalTime.of(12, 0))
-        .expiryZone(ZoneId.of("UTC"))
-        .payment(CurrencyAmount.of(Currency.USD, -10_000))
-        .build();
-
-    return FxDigitalOptionTrade.builder()
-        .info(TradeInfo.builder()
-            .id(StandardId.of("example", "2"))
-            .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
-            .counterparty(StandardId.of("example", "BigBankA"))
-            .settlementDate(tradeSettleDate)
-            .build())
-        .product(fxDigitalOption)
-        .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
         .build();
   }
 
@@ -206,23 +207,23 @@ public class CryptoPricingExample {
         .longShort(LongShort.LONG)
         .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
-        .index(FxIndices.BTC_USD_HXRO)
-        .strikePrice(8000)
+        .index(fxIndex)
+        .strikePrice(11000)
         .expiryDate(expiryDate0)
         .expiryTime(LocalTime.of(12, 0))
-        .payment(CurrencyAmount.of(Currency.USD, -10_000))
         .expiryZone(ZoneId.of("UTC"))
+        .payment(CurrencyAmount.of(Currency.USD, 10_000))
         .build();
 
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
-            .id(StandardId.of("example", "3"))
+            .id(StandardId.of("example", "1"))
             .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
         .product(fxDigitalOption)
-        .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
         .build();
   }
 
@@ -230,26 +231,26 @@ public class CryptoPricingExample {
   private static Trade createTrade4() {
 
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.LONG)
-        .barrierType(BarrierType.UP)
+        .longShort(LongShort.SHORT)
+        .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
-        .strikePrice(8000)
+        .strikePrice(11000)
         .expiryDate(expiryDate0)
         .expiryTime(LocalTime.of(12, 0))
-        .payment(CurrencyAmount.of(Currency.USD, -10_000))
         .expiryZone(ZoneId.of("UTC"))
+        .payment(CurrencyAmount.of(Currency.USD, -10_000))
         .build();
 
     return FxDigitalOptionTrade.builder()
         .info(TradeInfo.builder()
-            .id(StandardId.of("example", "4"))
+            .id(StandardId.of("example", "1"))
             .addAttribute(AttributeType.DESCRIPTION, fxDigitalOption.toString())
             .counterparty(StandardId.of("example", "BigBankA"))
             .settlementDate(tradeSettleDate)
             .build())
         .product(fxDigitalOption)
-        .premium(AdjustablePayment.of(Currency.USD, 5000, premiumSettleDate))
+        .premium(AdjustablePayment.of(Currency.USD, 0, premiumSettleDate))
         .build();
   }
 

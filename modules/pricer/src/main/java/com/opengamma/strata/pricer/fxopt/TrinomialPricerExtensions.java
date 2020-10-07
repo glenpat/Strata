@@ -64,7 +64,7 @@ public final class TrinomialPricerExtensions {
 
     double timeToExpiry = data.getTime(nSteps);
 
-    double notional = Math.abs(signedNotional.getAmount());
+    double notional = signedNotional.getAmount();
     double[] rebateArray = new double[nSteps + 1];
 
     //  only implemented for rebate in counter ccy
@@ -78,9 +78,11 @@ public final class TrinomialPricerExtensions {
     final double strike;
     final PutCall putCall;
     if (barrierType.isDown()) {
+      //  TODO: is this a problem?
       strike = Double.MIN_VALUE;
       putCall = PutCall.PUT;
     } else {
+      //  TODO: is this a problem?
       strike = Double.MAX_VALUE;
       putCall = PutCall.CALL;
     }
