@@ -446,6 +446,14 @@
 
   <!-- ==================================================================== -->
   <profiles>
+    <!-- PF - skip checkstyle and all tests -->
+    <profile>
+      <id>skipChecks</id>
+      <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
     <!-- force correct Java version -->
     <profile>
       <id>forcejavaversion</id>

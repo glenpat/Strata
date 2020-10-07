@@ -68,7 +68,7 @@
               <attach>false</attach>
               <finalName>strata-dist-${project.version}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
-              <baseDirectory>strata-dist-${project.version}</baseDirectory>
+              <archiveBaseDirectory>strata-dist-${project.version}</archiveBaseDirectory>
               <descriptors>
                 <descriptor>src/assembly/dist.xml</descriptor>
               </descriptors>
