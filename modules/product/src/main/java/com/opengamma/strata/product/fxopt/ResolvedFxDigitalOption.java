@@ -46,9 +46,6 @@ public final class ResolvedFxDigitalOption
   @PropertyDefinition(validate = "notNull")
   private final FxIndex index;
 
-  @PropertyDefinition(validate = "notNull")
-  private final LongShort longShort;
-
   /**
    * signed payment, positive (receive) if long
    * always in the counter currency (to be safe)
@@ -98,21 +95,18 @@ public final class ResolvedFxDigitalOption
       double strikePrice,
       ZonedDateTime expiry,
       FxIndex index,
-      LongShort longShort,
       CurrencyAmount payment) {
     JodaBeanUtils.notNull(barrierType, "barrierType");
     JodaBeanUtils.notNull(optionType, "optionType");
     ArgChecker.notNegativeOrNaN(strikePrice, "strikePrice");
     JodaBeanUtils.notNull(expiry, "expiry");
     JodaBeanUtils.notNull(index, "index");
-    JodaBeanUtils.notNull(longShort, "longShort");
     JodaBeanUtils.notNull(payment, "payment");
     this.barrierType = barrierType;
     this.optionType = optionType;
     this.strikePrice = strikePrice;
     this.expiry = expiry;
     this.index = index;
-    this.longShort = longShort;
     this.payment = payment;
   }
 
@@ -168,15 +162,6 @@ public final class ResolvedFxDigitalOption
 
   //-----------------------------------------------------------------------
   /**
-   * Gets the longShort.
-   * @return the value of the property, not null
-   */
-  public LongShort getLongShort() {
-    return longShort;
-  }
-
-  //-----------------------------------------------------------------------
-  /**
    * Gets signed payment, positive (receive) if long
    * always in the counter currency (to be safe)
    * @return the value of the property, not null
@@ -206,7 +191,6 @@ public final class ResolvedFxDigitalOption
           JodaBeanUtils.equal(strikePrice, other.strikePrice) &&
           JodaBeanUtils.equal(expiry, other.expiry) &&
           JodaBeanUtils.equal(index, other.index) &&
-          JodaBeanUtils.equal(longShort, other.longShort) &&
           JodaBeanUtils.equal(payment, other.payment);
     }
     return false;
@@ -220,21 +204,19 @@ public final class ResolvedFxDigitalOption
     hash = hash * 31 + JodaBeanUtils.hashCode(strikePrice);
     hash = hash * 31 + JodaBeanUtils.hashCode(expiry);
     hash = hash * 31 + JodaBeanUtils.hashCode(index);
-    hash = hash * 31 + JodaBeanUtils.hashCode(longShort);
     hash = hash * 31 + JodaBeanUtils.hashCode(payment);
     return hash;
   }
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder(256);
+    StringBuilder buf = new StringBuilder(224);
     buf.append("ResolvedFxDigitalOption{");
     buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
     buf.append("optionType").append('=').append(JodaBeanUtils.toString(optionType)).append(',').append(' ');
     buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
     buf.append("expiry").append('=').append(JodaBeanUtils.toString(expiry)).append(',').append(' ');
     buf.append("index").append('=').append(JodaBeanUtils.toString(index)).append(',').append(' ');
-    buf.append("longShort").append('=').append(JodaBeanUtils.toString(longShort)).append(',').append(' ');
     buf.append("payment").append('=').append(JodaBeanUtils.toString(payment));
     buf.append('}');
     return buf.toString();
@@ -276,11 +258,6 @@ public final class ResolvedFxDigitalOption
     private final MetaProperty<FxIndex> index = DirectMetaProperty.ofImmutable(
         this, "index", ResolvedFxDigitalOption.class, FxIndex.class);
     /**
-     * The meta-property for the {@code longShort} property.
-     */
-    private final MetaProperty<LongShort> longShort = DirectMetaProperty.ofImmutable(
-        this, "longShort", ResolvedFxDigitalOption.class, LongShort.class);
-    /**
      * The meta-property for the {@code payment} property.
      */
     private final MetaProperty<CurrencyAmount> payment = DirectMetaProperty.ofImmutable(
@@ -295,7 +272,6 @@ public final class ResolvedFxDigitalOption
         "strikePrice",
         "expiry",
         "index",
-        "longShort",
         "payment");
 
     /**
@@ -317,8 +293,6 @@ public final class ResolvedFxDigitalOption
           return expiry;
         case 100346066:  // index
           return index;
-        case 116685664:  // longShort
-          return longShort;
         case -786681338:  // payment
           return payment;
       }
@@ -382,14 +356,6 @@ public final class ResolvedFxDigitalOption
     }
 
     /**
-     * The meta-property for the {@code longShort} property.
-     * @return the meta-property, not null
-     */
-    public MetaProperty<LongShort> longShort() {
-      return longShort;
-    }
-
-    /**
      * The meta-property for the {@code payment} property.
      * @return the meta-property, not null
      */
@@ -411,8 +377,6 @@ public final class ResolvedFxDigitalOption
           return ((ResolvedFxDigitalOption) bean).getExpiry();
         case 100346066:  // index
           return ((ResolvedFxDigitalOption) bean).getIndex();
-        case 116685664:  // longShort
-          return ((ResolvedFxDigitalOption) bean).getLongShort();
         case -786681338:  // payment
           return ((ResolvedFxDigitalOption) bean).getPayment();
       }
@@ -441,7 +405,6 @@ public final class ResolvedFxDigitalOption
     private double strikePrice;
     private ZonedDateTime expiry;
     private FxIndex index;
-    private LongShort longShort;
     private CurrencyAmount payment;
 
     /**
@@ -460,7 +423,6 @@ public final class ResolvedFxDigitalOption
       this.strikePrice = beanToCopy.getStrikePrice();
       this.expiry = beanToCopy.getExpiry();
       this.index = beanToCopy.getIndex();
-      this.longShort = beanToCopy.getLongShort();
       this.payment = beanToCopy.getPayment();
     }
 
@@ -478,8 +440,6 @@ public final class ResolvedFxDigitalOption
           return expiry;
         case 100346066:  // index
           return index;
-        case 116685664:  // longShort
-          return longShort;
         case -786681338:  // payment
           return payment;
         default:
@@ -505,9 +465,6 @@ public final class ResolvedFxDigitalOption
         case 100346066:  // index
           this.index = (FxIndex) newValue;
           break;
-        case 116685664:  // longShort
-          this.longShort = (LongShort) newValue;
-          break;
         case -786681338:  // payment
           this.payment = (CurrencyAmount) newValue;
           break;
@@ -531,7 +488,6 @@ public final class ResolvedFxDigitalOption
           strikePrice,
           expiry,
           index,
-          longShort,
           payment);
     }
 
@@ -592,17 +548,6 @@ public final class ResolvedFxDigitalOption
     }
 
     /**
-     * Sets the longShort.
-     * @param longShort  the new value, not null
-     * @return this, for chaining, not null
-     */
-    public Builder longShort(LongShort longShort) {
-      JodaBeanUtils.notNull(longShort, "longShort");
-      this.longShort = longShort;
-      return this;
-    }
-
-    /**
      * Sets signed payment, positive (receive) if long
      * always in the counter currency (to be safe)
      * @param payment  the new value, not null
@@ -617,14 +562,13 @@ public final class ResolvedFxDigitalOption
     //-----------------------------------------------------------------------
     @Override
     public String toString() {
-      StringBuilder buf = new StringBuilder(256);
+      StringBuilder buf = new StringBuilder(224);
       buf.append("ResolvedFxDigitalOption.Builder{");
       buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
       buf.append("optionType").append('=').append(JodaBeanUtils.toString(optionType)).append(',').append(' ');
       buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
       buf.append("expiry").append('=').append(JodaBeanUtils.toString(expiry)).append(',').append(' ');
       buf.append("index").append('=').append(JodaBeanUtils.toString(index)).append(',').append(' ');
-      buf.append("longShort").append('=').append(JodaBeanUtils.toString(longShort)).append(',').append(' ');
       buf.append("payment").append('=').append(JodaBeanUtils.toString(payment));
       buf.append('}');
       return buf.toString();

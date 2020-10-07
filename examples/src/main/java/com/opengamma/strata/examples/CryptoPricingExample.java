@@ -151,7 +151,6 @@ public class CryptoPricingExample {
   private static Trade createTrade1() {
 
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.LONG)
         .barrierType(BarrierType.UP)
         .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
@@ -177,7 +176,6 @@ public class CryptoPricingExample {
   // create an FX Forward trade
   private static Trade createTrade2() {
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.SHORT)
         .barrierType(BarrierType.UP)
         .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
@@ -204,7 +202,6 @@ public class CryptoPricingExample {
   private static Trade createTrade3() {
 
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.LONG)
         .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)
@@ -231,7 +228,6 @@ public class CryptoPricingExample {
   private static Trade createTrade4() {
 
     final FxDigitalOption fxDigitalOption = FxDigitalOption.builder()
-        .longShort(LongShort.SHORT)
         .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
         .index(fxIndex)

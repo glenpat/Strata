@@ -160,7 +160,6 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .expiry(expiryDateTime)
         .barrierType(BarrierType.UP)
         .optionType(EtdOptionType.EUROPEAN)
-        .longShort(LongShort.LONG)
         .build();
     final ResolvedFxDigitalOption downDigital = ResolvedFxDigitalOption.builder()
         .payment(CurrencyAmount.of(USD, 1000_000_000D))
@@ -169,7 +168,6 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .expiry(expiryDateTime)
         .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
-        .longShort(LongShort.LONG)
         .build();
 
     System.out.println("vanilla-----------");
