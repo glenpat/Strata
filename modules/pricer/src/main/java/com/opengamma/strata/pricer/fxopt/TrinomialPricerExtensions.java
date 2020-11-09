@@ -15,6 +15,7 @@ import com.opengamma.strata.product.fxopt.ResolvedFxDigitalOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxOption;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOption;
 import com.opengamma.strata.product.option.BarrierType;
+import com.opengamma.strata.product.option.KnockType;
 
 import java.util.Arrays;
 
@@ -41,13 +42,14 @@ public final class TrinomialPricerExtensions {
 
     if (option.getOptionType() == EtdOptionType.EUROPEAN) {
       DigitalOptionFunction digitalFunction = DigitalOptionFunction.of(
-          option.getStrikePrice(), timeToExpiry, option.getBarrierType(), nSteps);
+          option.getStrikePrice(), timeToExpiry, option.getBarrierType(), option.getKnockType(), nSteps);
       return TREE.optionPriceAdjoint(digitalFunction, data);
+
     } else {
       final CurrencyAmount payment = option.getPayment();
       final CurrencyAmount signedNotional = option.getSignedNotional();
       return priceDerivativesOneTouch(signedNotional, option.getIndex().getCurrencyPair().getCounter(),
-          option.getBarrierType(), option.getStrikePrice(),
+          option.getBarrierType(), option.getKnockType(), option.getStrikePrice(),
           payment, data);
     }
   }
@@ -56,6 +58,7 @@ public final class TrinomialPricerExtensions {
       CurrencyAmount signedNotional,
       Currency ccyCounter,
       BarrierType barrierType,
+      KnockType knockType,
       double barrierLevel,
       CurrencyAmount rebateCurrencyAmount,
       RecombiningTrinomialTreeData data) {
@@ -74,6 +77,8 @@ public final class TrinomialPricerExtensions {
 
     double rebate = rebateCurrencyAmount.getAmount() / notional;
     Arrays.fill(rebateArray, rebate);
+
+    //  todo: need to get rid of the option part - only care about the rebate part!!
 
     final double strike;
     final PutCall putCall;

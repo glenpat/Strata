@@ -4,9 +4,9 @@ import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.collect.ArgChecker;
-import com.opengamma.strata.product.common.LongShort;
 import com.opengamma.strata.product.etd.EtdOptionType;
 import com.opengamma.strata.product.option.BarrierType;
+import com.opengamma.strata.product.option.KnockType;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
 import org.joda.beans.JodaBeanUtils;
@@ -33,6 +33,9 @@ public final class ResolvedFxDigitalOption
 
   @PropertyDefinition(validate = "notNull")
   private final BarrierType barrierType;
+
+  @PropertyDefinition(validate = "notNull")
+  private final KnockType knockType;
 
   @PropertyDefinition(validate = "notNull")
   private final EtdOptionType optionType;
@@ -91,18 +94,21 @@ public final class ResolvedFxDigitalOption
 
   private ResolvedFxDigitalOption(
       BarrierType barrierType,
+      KnockType knockType,
       EtdOptionType optionType,
       double strikePrice,
       ZonedDateTime expiry,
       FxIndex index,
       CurrencyAmount payment) {
     JodaBeanUtils.notNull(barrierType, "barrierType");
+    JodaBeanUtils.notNull(knockType, "knockType");
     JodaBeanUtils.notNull(optionType, "optionType");
     ArgChecker.notNegativeOrNaN(strikePrice, "strikePrice");
     JodaBeanUtils.notNull(expiry, "expiry");
     JodaBeanUtils.notNull(index, "index");
     JodaBeanUtils.notNull(payment, "payment");
     this.barrierType = barrierType;
+    this.knockType = knockType;
     this.optionType = optionType;
     this.strikePrice = strikePrice;
     this.expiry = expiry;
@@ -122,6 +128,15 @@ public final class ResolvedFxDigitalOption
    */
   public BarrierType getBarrierType() {
     return barrierType;
+  }
+
+  //-----------------------------------------------------------------------
+  /**
+   * Gets the knockType.
+   * @return the value of the property, not null
+   */
+  public KnockType getKnockType() {
+    return knockType;
   }
 
   //-----------------------------------------------------------------------
@@ -187,6 +202,7 @@ public final class ResolvedFxDigitalOption
     if (obj != null && obj.getClass() == this.getClass()) {
       ResolvedFxDigitalOption other = (ResolvedFxDigitalOption) obj;
       return JodaBeanUtils.equal(barrierType, other.barrierType) &&
+          JodaBeanUtils.equal(knockType, other.knockType) &&
           JodaBeanUtils.equal(optionType, other.optionType) &&
           JodaBeanUtils.equal(strikePrice, other.strikePrice) &&
           JodaBeanUtils.equal(expiry, other.expiry) &&
@@ -200,6 +216,7 @@ public final class ResolvedFxDigitalOption
   public int hashCode() {
     int hash = getClass().hashCode();
     hash = hash * 31 + JodaBeanUtils.hashCode(barrierType);
+    hash = hash * 31 + JodaBeanUtils.hashCode(knockType);
     hash = hash * 31 + JodaBeanUtils.hashCode(optionType);
     hash = hash * 31 + JodaBeanUtils.hashCode(strikePrice);
     hash = hash * 31 + JodaBeanUtils.hashCode(expiry);
@@ -210,9 +227,10 @@ public final class ResolvedFxDigitalOption
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder(224);
+    StringBuilder buf = new StringBuilder(256);
     buf.append("ResolvedFxDigitalOption{");
     buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
+    buf.append("knockType").append('=').append(JodaBeanUtils.toString(knockType)).append(',').append(' ');
     buf.append("optionType").append('=').append(JodaBeanUtils.toString(optionType)).append(',').append(' ');
     buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
     buf.append("expiry").append('=').append(JodaBeanUtils.toString(expiry)).append(',').append(' ');
@@ -237,6 +255,11 @@ public final class ResolvedFxDigitalOption
      */
     private final MetaProperty<BarrierType> barrierType = DirectMetaProperty.ofImmutable(
         this, "barrierType", ResolvedFxDigitalOption.class, BarrierType.class);
+    /**
+     * The meta-property for the {@code knockType} property.
+     */
+    private final MetaProperty<KnockType> knockType = DirectMetaProperty.ofImmutable(
+        this, "knockType", ResolvedFxDigitalOption.class, KnockType.class);
     /**
      * The meta-property for the {@code optionType} property.
      */
@@ -268,6 +291,7 @@ public final class ResolvedFxDigitalOption
     private final Map<String, MetaProperty<?>> metaPropertyMap$ = new DirectMetaPropertyMap(
         this, null,
         "barrierType",
+        "knockType",
         "optionType",
         "strikePrice",
         "expiry",
@@ -285,6 +309,8 @@ public final class ResolvedFxDigitalOption
       switch (propertyName.hashCode()) {
         case 1029043089:  // barrierType
           return barrierType;
+        case 975895086:  // knockType
+          return knockType;
         case 1373587791:  // optionType
           return optionType;
         case 50946231:  // strikePrice
@@ -321,6 +347,14 @@ public final class ResolvedFxDigitalOption
      */
     public MetaProperty<BarrierType> barrierType() {
       return barrierType;
+    }
+
+    /**
+     * The meta-property for the {@code knockType} property.
+     * @return the meta-property, not null
+     */
+    public MetaProperty<KnockType> knockType() {
+      return knockType;
     }
 
     /**
@@ -369,6 +403,8 @@ public final class ResolvedFxDigitalOption
       switch (propertyName.hashCode()) {
         case 1029043089:  // barrierType
           return ((ResolvedFxDigitalOption) bean).getBarrierType();
+        case 975895086:  // knockType
+          return ((ResolvedFxDigitalOption) bean).getKnockType();
         case 1373587791:  // optionType
           return ((ResolvedFxDigitalOption) bean).getOptionType();
         case 50946231:  // strikePrice
@@ -401,6 +437,7 @@ public final class ResolvedFxDigitalOption
   public static final class Builder extends DirectFieldsBeanBuilder<ResolvedFxDigitalOption> {
 
     private BarrierType barrierType;
+    private KnockType knockType;
     private EtdOptionType optionType;
     private double strikePrice;
     private ZonedDateTime expiry;
@@ -419,6 +456,7 @@ public final class ResolvedFxDigitalOption
      */
     private Builder(ResolvedFxDigitalOption beanToCopy) {
       this.barrierType = beanToCopy.getBarrierType();
+      this.knockType = beanToCopy.getKnockType();
       this.optionType = beanToCopy.getOptionType();
       this.strikePrice = beanToCopy.getStrikePrice();
       this.expiry = beanToCopy.getExpiry();
@@ -432,6 +470,8 @@ public final class ResolvedFxDigitalOption
       switch (propertyName.hashCode()) {
         case 1029043089:  // barrierType
           return barrierType;
+        case 975895086:  // knockType
+          return knockType;
         case 1373587791:  // optionType
           return optionType;
         case 50946231:  // strikePrice
@@ -452,6 +492,9 @@ public final class ResolvedFxDigitalOption
       switch (propertyName.hashCode()) {
         case 1029043089:  // barrierType
           this.barrierType = (BarrierType) newValue;
+          break;
+        case 975895086:  // knockType
+          this.knockType = (KnockType) newValue;
           break;
         case 1373587791:  // optionType
           this.optionType = (EtdOptionType) newValue;
@@ -484,6 +527,7 @@ public final class ResolvedFxDigitalOption
     public ResolvedFxDigitalOption build() {
       return new ResolvedFxDigitalOption(
           barrierType,
+          knockType,
           optionType,
           strikePrice,
           expiry,
@@ -500,6 +544,17 @@ public final class ResolvedFxDigitalOption
     public Builder barrierType(BarrierType barrierType) {
       JodaBeanUtils.notNull(barrierType, "barrierType");
       this.barrierType = barrierType;
+      return this;
+    }
+
+    /**
+     * Sets the knockType.
+     * @param knockType  the new value, not null
+     * @return this, for chaining, not null
+     */
+    public Builder knockType(KnockType knockType) {
+      JodaBeanUtils.notNull(knockType, "knockType");
+      this.knockType = knockType;
       return this;
     }
 
@@ -562,9 +617,10 @@ public final class ResolvedFxDigitalOption
     //-----------------------------------------------------------------------
     @Override
     public String toString() {
-      StringBuilder buf = new StringBuilder(224);
+      StringBuilder buf = new StringBuilder(256);
       buf.append("ResolvedFxDigitalOption.Builder{");
       buf.append("barrierType").append('=').append(JodaBeanUtils.toString(barrierType)).append(',').append(' ');
+      buf.append("knockType").append('=').append(JodaBeanUtils.toString(knockType)).append(',').append(' ');
       buf.append("optionType").append('=').append(JodaBeanUtils.toString(optionType)).append(',').append(' ');
       buf.append("strikePrice").append('=').append(JodaBeanUtils.toString(strikePrice)).append(',').append(' ');
       buf.append("expiry").append('=').append(JodaBeanUtils.toString(expiry)).append(',').append(' ');

@@ -8,6 +8,7 @@ package com.opengamma.strata.pricer.impl.tree;
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.collect.array.DoubleArray;
 import com.opengamma.strata.product.option.BarrierType;
+import com.opengamma.strata.product.option.KnockType;
 import org.joda.beans.Bean;
 import org.joda.beans.BeanBuilder;
 import org.joda.beans.ImmutableBean;
@@ -64,12 +65,23 @@ public final class DigitalOptionFunction
    * @param strike  the strike
    * @param timeToExpiry  the time to expiry
    * @param barrierType  down or up
+   * @param knockType
    * @param numberOfSteps  the number of time steps
    * @return the instance
    */
   public static DigitalOptionFunction of(double strike, double timeToExpiry, BarrierType barrierType,
-      int numberOfSteps) {
-    double sign = barrierType.isDown() ? -1d : 1d;
+      KnockType knockType, int numberOfSteps) {
+    double sign;
+    switch (knockType) {
+      case KNOCK_IN:
+        sign = barrierType.isDown() ? -1d : 1d;
+        break;
+      case KNOCK_OUT:
+      default:
+        sign = barrierType.isDown() ? 1d : -1d;
+        break;
+    }
+
     ArgChecker.isTrue(numberOfSteps > 0, "the number of steps should be positive");
     return new DigitalOptionFunction(strike, timeToExpiry, sign, numberOfSteps);
   }
@@ -132,7 +144,7 @@ public final class DigitalOptionFunction
    * @return the value of the property
    */
   public double getStrike() {
-    return strike;
+    return this.strike;
   }
 
   //-----------------------------------------------------------------------
@@ -142,7 +154,7 @@ public final class DigitalOptionFunction
    */
   @Override
   public double getTimeToExpiry() {
-    return timeToExpiry;
+    return this.timeToExpiry;
   }
 
   //-----------------------------------------------------------------------
@@ -153,7 +165,7 @@ public final class DigitalOptionFunction
    * @return the value of the property
    */
   public double getSign() {
-    return sign;
+    return this.sign;
   }
 
   //-----------------------------------------------------------------------
@@ -163,7 +175,7 @@ public final class DigitalOptionFunction
    */
   @Override
   public int getNumberOfSteps() {
-    return numberOfSteps;
+    return this.numberOfSteps;
   }
 
   //-----------------------------------------------------------------------
@@ -174,10 +186,10 @@ public final class DigitalOptionFunction
     }
     if (obj != null && obj.getClass() == this.getClass()) {
       DigitalOptionFunction other = (DigitalOptionFunction) obj;
-      return JodaBeanUtils.equal(strike, other.strike) &&
-          JodaBeanUtils.equal(timeToExpiry, other.timeToExpiry) &&
-          JodaBeanUtils.equal(sign, other.sign) &&
-          (numberOfSteps == other.numberOfSteps);
+      return JodaBeanUtils.equal(this.strike, other.strike) &&
+          JodaBeanUtils.equal(this.timeToExpiry, other.timeToExpiry) &&
+          JodaBeanUtils.equal(this.sign, other.sign) &&
+          (this.numberOfSteps == other.numberOfSteps);
     }
     return false;
   }
@@ -185,10 +197,10 @@ public final class DigitalOptionFunction
   @Override
   public int hashCode() {
     int hash = getClass().hashCode();
-    hash = hash * 31 + JodaBeanUtils.hashCode(strike);
-    hash = hash * 31 + JodaBeanUtils.hashCode(timeToExpiry);
-    hash = hash * 31 + JodaBeanUtils.hashCode(sign);
-    hash = hash * 31 + JodaBeanUtils.hashCode(numberOfSteps);
+    hash = hash * 31 + JodaBeanUtils.hashCode(this.strike);
+    hash = hash * 31 + JodaBeanUtils.hashCode(this.timeToExpiry);
+    hash = hash * 31 + JodaBeanUtils.hashCode(this.sign);
+    hash = hash * 31 + JodaBeanUtils.hashCode(this.numberOfSteps);
     return hash;
   }
 
@@ -196,10 +208,10 @@ public final class DigitalOptionFunction
   public String toString() {
     StringBuilder buf = new StringBuilder(160);
     buf.append("DigitalOptionFunction{");
-    buf.append("strike").append('=').append(JodaBeanUtils.toString(strike)).append(',').append(' ');
-    buf.append("timeToExpiry").append('=').append(JodaBeanUtils.toString(timeToExpiry)).append(',').append(' ');
-    buf.append("sign").append('=').append(JodaBeanUtils.toString(sign)).append(',').append(' ');
-    buf.append("numberOfSteps").append('=').append(JodaBeanUtils.toString(numberOfSteps));
+    buf.append("strike").append('=').append(JodaBeanUtils.toString(this.strike)).append(',').append(' ');
+    buf.append("timeToExpiry").append('=').append(JodaBeanUtils.toString(this.timeToExpiry)).append(',').append(' ');
+    buf.append("sign").append('=').append(JodaBeanUtils.toString(this.sign)).append(',').append(' ');
+    buf.append("numberOfSteps").append('=').append(JodaBeanUtils.toString(this.numberOfSteps));
     buf.append('}');
     return buf.toString();
   }
@@ -254,13 +266,13 @@ public final class DigitalOptionFunction
     protected MetaProperty<?> metaPropertyGet(String propertyName) {
       switch (propertyName.hashCode()) {
         case -891985998:  // strike
-          return strike;
+          return this.strike;
         case -1831499397:  // timeToExpiry
-          return timeToExpiry;
+          return this.timeToExpiry;
         case 3530173:  // sign
-          return sign;
+          return this.sign;
         case -1323103225:  // numberOfSteps
-          return numberOfSteps;
+          return this.numberOfSteps;
       }
       return super.metaPropertyGet(propertyName);
     }
@@ -277,7 +289,7 @@ public final class DigitalOptionFunction
 
     @Override
     public Map<String, MetaProperty<?>> metaPropertyMap() {
-      return metaPropertyMap$;
+      return this.metaPropertyMap$;
     }
 
     //-----------------------------------------------------------------------
@@ -286,7 +298,7 @@ public final class DigitalOptionFunction
      * @return the meta-property, not null
      */
     public MetaProperty<Double> strike() {
-      return strike;
+      return this.strike;
     }
 
     /**
@@ -294,7 +306,7 @@ public final class DigitalOptionFunction
      * @return the meta-property, not null
      */
     public MetaProperty<Double> timeToExpiry() {
-      return timeToExpiry;
+      return this.timeToExpiry;
     }
 
     /**
@@ -302,7 +314,7 @@ public final class DigitalOptionFunction
      * @return the meta-property, not null
      */
     public MetaProperty<Double> sign() {
-      return sign;
+      return this.sign;
     }
 
     /**
@@ -310,7 +322,7 @@ public final class DigitalOptionFunction
      * @return the meta-property, not null
      */
     public MetaProperty<Integer> numberOfSteps() {
-      return numberOfSteps;
+      return this.numberOfSteps;
     }
 
     //-----------------------------------------------------------------------
@@ -362,13 +374,13 @@ public final class DigitalOptionFunction
     public Object get(String propertyName) {
       switch (propertyName.hashCode()) {
         case -891985998:  // strike
-          return strike;
+          return this.strike;
         case -1831499397:  // timeToExpiry
-          return timeToExpiry;
+          return this.timeToExpiry;
         case 3530173:  // sign
-          return sign;
+          return this.sign;
         case -1323103225:  // numberOfSteps
-          return numberOfSteps;
+          return this.numberOfSteps;
         default:
           throw new NoSuchElementException("Unknown property: " + propertyName);
       }
@@ -398,10 +410,10 @@ public final class DigitalOptionFunction
     @Override
     public DigitalOptionFunction build() {
       return new DigitalOptionFunction(
-          strike,
-          timeToExpiry,
-          sign,
-          numberOfSteps);
+          this.strike,
+          this.timeToExpiry,
+          this.sign,
+          this.numberOfSteps);
     }
 
     //-----------------------------------------------------------------------
@@ -409,10 +421,10 @@ public final class DigitalOptionFunction
     public String toString() {
       StringBuilder buf = new StringBuilder(160);
       buf.append("DigitalOptionFunction.Builder{");
-      buf.append("strike").append('=').append(JodaBeanUtils.toString(strike)).append(',').append(' ');
-      buf.append("timeToExpiry").append('=').append(JodaBeanUtils.toString(timeToExpiry)).append(',').append(' ');
-      buf.append("sign").append('=').append(JodaBeanUtils.toString(sign)).append(',').append(' ');
-      buf.append("numberOfSteps").append('=').append(JodaBeanUtils.toString(numberOfSteps));
+      buf.append("strike").append('=').append(JodaBeanUtils.toString(this.strike)).append(',').append(' ');
+      buf.append("timeToExpiry").append('=').append(JodaBeanUtils.toString(this.timeToExpiry)).append(',').append(' ');
+      buf.append("sign").append('=').append(JodaBeanUtils.toString(this.sign)).append(',').append(' ');
+      buf.append("numberOfSteps").append('=').append(JodaBeanUtils.toString(this.numberOfSteps));
       buf.append('}');
       return buf.toString();
     }
