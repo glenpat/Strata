@@ -50,6 +50,8 @@ final class StandardMeasures {
   public static final Measure RESOLVED_TARGET = ImmutableMeasure.of("ResolvedTarget", false);
   // unit price, which is treated as a simple decimal number even if it refers to a currency
   public static final Measure UNIT_PRICE = ImmutableMeasure.of("UnitPrice", false);
+  // implied volatility
+  public static final Measure IMPLIED_VOLATILITY = ImmutableMeasure.of("ImpliedVolatility", false);
 
   //-------------------------------------------------------------------------
   // semi-parallel gamma bucketed PV01

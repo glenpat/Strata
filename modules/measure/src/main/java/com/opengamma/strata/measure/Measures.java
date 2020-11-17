@@ -137,6 +137,13 @@ public final class Measures {
    */
   public static final Measure RESOLVED_TARGET = Measure.of(StandardMeasures.RESOLVED_TARGET.getName());
 
+  /**
+   * Measure representing the implied volatility of the calculation target.
+   * <p>
+   * The result is a single currency monetary amount in the reporting currency.
+   */
+  public static final Measure IMPLIED_VOLATILITY = Measure.of(StandardMeasures.IMPLIED_VOLATILITY.getName());
+
   //-------------------------------------------------------------------------
   private Measures() {
   }
