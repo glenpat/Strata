@@ -5,13 +5,11 @@
  */
 package com.opengamma.strata.measure.rate;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.FxRateProvider;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.basics.index.Index;
 import com.opengamma.strata.calc.CalculationRules;
 import com.opengamma.strata.calc.runner.CalculationParameter;
@@ -30,6 +28,10 @@ import com.opengamma.strata.market.curve.RatesCurveGroup;
 import com.opengamma.strata.market.curve.RatesCurveGroupDefinition;
 import com.opengamma.strata.market.curve.RatesCurveGroupEntry;
 import com.opengamma.strata.pricer.rate.RatesProvider;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The lookup that provides access to rates in market data.
@@ -263,21 +265,65 @@ public interface RatesMarketDataLookup extends FxRateLookup, CalculationParamete
 
   /**
    * Creates market data requirements for the specified currencies and indices.
-   * 
+   *
    * @param currencies  the currencies, for which discount factors will be needed
    * @param indices  the indices, for which forward curves and time-series will be needed
    * @return the requirements
    * @throws IllegalArgumentException if unable to create requirements
    */
-  public abstract FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices);
+  public default FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices) {
+    return requirements(currencies, indices, ImmutableSet.of(), ImmutableSet.of());
+  }
+
+  /**
+   * Creates market data requirements for the specified currency pair.
+   * <p>
+   * This is used when discount factors are required for each currency and necessary FxRate are required
+   * (based on FxRateLookup requirement)
+   *
+   * @param currencyPair  the currency pair, for which FxRates (spot and forward) will be required
+   * @return the requirements
+   * @throws IllegalArgumentException if unable to create requirements
+   */
+  public default FunctionRequirements requirements(CurrencyPair currencyPair) {
+    return requirements(ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(currencyPair), ImmutableSet.of());
+  }
+
+  /**
+   * Creates market data requirements for the specified currency pair.
+   * <p>
+   * This is used when discount factors are required for each currency and necessary FxRate are required
+   * (based on FxRateLookup requirement)
+   *
+   * @param fxIndex  the fx index, for which FxRates (spot and forward) will be required
+   * @return the requirements
+   * @throws IllegalArgumentException if unable to create requirements
+   */
+  public default FunctionRequirements requirements(FxIndex fxIndex) {
+    return requirements(ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(fxIndex));
+  }
+
+  /**
+   * Creates market data requirements for the specified currencies and indices.
+   *
+   * @param currencies  the currencies, for which discount factors will be needed
+   * @param indices  the indices, for which forward curves and time-series will be needed
+   * @param currencyPairs the pairs, for which fx rates will be needed
+   * @param fxIndices the indiced, for which fx rates will be needed
+   * @return the requirements
+   * @throws IllegalArgumentException if unable to create requirements
+   */
+  public abstract FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices,
+      Set<CurrencyPair> currencyPairs, Set<FxIndex> fxIndices);
 
   //-------------------------------------------------------------------------
+
   /**
    * Obtains a filtered view of the complete set of market data.
    * <p>
    * This method returns an instance that binds the lookup to the market data.
    * The input is {@link ScenarioMarketData}, which contains market data for all scenarios.
-   * 
+   *
    * @param marketData  the complete set of market data for all scenarios
    * @return the filtered market data
    */

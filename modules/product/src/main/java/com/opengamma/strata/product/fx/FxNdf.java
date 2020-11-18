@@ -5,11 +5,15 @@
  */
 package com.opengamma.strata.product.fx;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
+import com.google.common.collect.ImmutableSet;
+import com.opengamma.strata.basics.ReferenceData;
+import com.opengamma.strata.basics.Resolvable;
+import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyAmount;
+import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.currency.FxRate;
+import com.opengamma.strata.basics.index.FxIndex;
+import com.opengamma.strata.basics.index.FxIndexObservation;
 import org.joda.beans.Bean;
 import org.joda.beans.ImmutableBean;
 import org.joda.beans.JodaBeanUtils;
@@ -23,15 +27,11 @@ import org.joda.beans.impl.direct.DirectMetaBean;
 import org.joda.beans.impl.direct.DirectMetaProperty;
 import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 
-import com.google.common.collect.ImmutableSet;
-import com.opengamma.strata.basics.ReferenceData;
-import com.opengamma.strata.basics.Resolvable;
-import com.opengamma.strata.basics.currency.Currency;
-import com.opengamma.strata.basics.currency.CurrencyAmount;
-import com.opengamma.strata.basics.currency.CurrencyPair;
-import com.opengamma.strata.basics.currency.FxRate;
-import com.opengamma.strata.basics.index.FxIndex;
-import com.opengamma.strata.basics.index.FxIndexObservation;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A Non-Deliverable Forward (NDF).
@@ -103,6 +103,10 @@ public final class FxNdf
     return index.getCurrencyPair().toConventional();
   }
 
+  @Override public Optional<FxIndex> getFxIndex() {
+    return Optional.of(index);
+  }
+
   @Override
   public ImmutableSet<Currency> allPaymentCurrencies() {
     return ImmutableSet.of(getSettlementCurrency());
@@ -110,7 +114,7 @@ public final class FxNdf
 
   /**
    * Gets the settlement currency.
-   * 
+   *
    * @return the currency that is to be settled
    */
   public Currency getSettlementCurrency() {

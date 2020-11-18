@@ -8,6 +8,7 @@ package com.opengamma.strata.product.fxopt;
 import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.Resolvable;
 import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.product.common.LongShort;
 import com.opengamma.strata.product.fx.FxOption;
 import com.opengamma.strata.product.fx.FxSingle;
@@ -31,6 +32,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.opengamma.strata.collect.ArgChecker.inOrderOrEqual;
 
@@ -95,12 +97,16 @@ public final class FxVanillaOption
    * Gets currency pair of the base currency and counter currency.
    * <p>
    * This currency pair is conventional, thus indifferent to the direction of FX.
-   * 
+   *
    * @return the currency pair
    */
   @Override
   public CurrencyPair getCurrencyPair() {
     return this.underlying.getCurrencyPair();
+  }
+
+  @Override public Optional<FxIndex> getFxIndex() {
+    return Optional.empty();
   }
 
   /**
@@ -109,7 +115,7 @@ public final class FxVanillaOption
    * The option expires at this date and time.
    * <p>
    * The result is returned by combining the expiry date, time and time-zone.
-   * 
+   *
    * @return the expiry date and time
    */
   public ZonedDateTime getExpiry() {

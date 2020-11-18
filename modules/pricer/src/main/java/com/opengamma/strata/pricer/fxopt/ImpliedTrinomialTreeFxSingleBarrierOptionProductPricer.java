@@ -149,7 +149,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData treeData) {
 
-    return priceDerivatives(option, ratesProvider, volatilities, treeData).getValue();
+    return priceDerivatives(option, ratesProvider, volatilities, treeData, false).getValue();
   }
 
   //-------------------------------------------------------------------------
@@ -316,7 +316,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       BlackFxOptionVolatilities volatilities,
       RecombiningTrinomialTreeData treeData) {
 
-    ValueDerivatives priceDerivatives = priceDerivatives(option, ratesProvider, volatilities, treeData);
+    ValueDerivatives priceDerivatives = priceDerivatives(option, ratesProvider, volatilities, treeData, true);
     double price = priceDerivatives.getValue();
     double delta = priceDerivatives.getDerivative(0);
     CurrencyPair currencyPair = option.getCurrencyPair();
@@ -333,19 +333,22 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       ResolvedFxOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
-      RecombiningTrinomialTreeData data) {
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
 
     if (option.getClass().equals(ResolvedFxSingleBarrierOption.class)) {
       final ResolvedFxSingleBarrierOption singleBarrierOption = (ResolvedFxSingleBarrierOption) option;
-      return priceDerivatives(singleBarrierOption, ratesProvider, volatilities, data);
+      return priceDerivatives(singleBarrierOption, ratesProvider, volatilities, data, calculateDerivatives);
 
     } else if (option.getClass().equals(ResolvedFxDigitalOption.class)) {
       final ResolvedFxDigitalOption fxDigitalOption = (ResolvedFxDigitalOption) option;
-      return TrinomialPricerExtensions.priceDerivatives(fxDigitalOption, ratesProvider, volatilities, data);
+      return TrinomialPricerExtensions
+          .priceDerivatives(fxDigitalOption, ratesProvider, volatilities, data, calculateDerivatives);
 
     } else if (option.getClass().equals(ResolvedFxVanillaOption.class)) {
       final ResolvedFxVanillaOption fxVanillaOption = (ResolvedFxVanillaOption) option;
-      return TrinomialPricerExtensions.priceDerivatives(fxVanillaOption, ratesProvider, volatilities, data);
+      return TrinomialPricerExtensions
+          .priceDerivatives(fxVanillaOption, ratesProvider, volatilities, data, calculateDerivatives);
 
     }
     throw new IllegalArgumentException("not implemented - " + option.getClass());
@@ -355,7 +358,8 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
       ResolvedFxSingleBarrierOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
-      RecombiningTrinomialTreeData data) {
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
 
     validate(option, ratesProvider, volatilities);
     validateData(option, ratesProvider, volatilities, data);
@@ -397,19 +401,20 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricer {
         Arrays.fill(rebateArray, rebate);
       }
     }
-    ConstantContinuousSingleBarrierKnockoutFunction barrierFunction = ConstantContinuousSingleBarrierKnockoutFunction.of(
-        underlyingOption.getStrike(),
-        timeToExpiry,
-        underlyingOption.getPutCall(),
-        nSteps,
-        barrier.getBarrierType(),
-        barrier.getBarrierLevel(),
-        DoubleArray.ofUnsafe(rebateArray));
-    ValueDerivatives barrierPrice = TREE.optionPriceAdjoint(barrierFunction, data);
+    ConstantContinuousSingleBarrierKnockoutFunction barrierFunction =
+        ConstantContinuousSingleBarrierKnockoutFunction.of(
+            underlyingOption.getStrike(),
+            timeToExpiry,
+            underlyingOption.getPutCall(),
+            nSteps,
+            barrier.getBarrierType(),
+            barrier.getBarrierLevel(),
+            DoubleArray.ofUnsafe(rebateArray));
+    ValueDerivatives barrierPrice = TREE.optionPriceAdjoint(barrierFunction, data, calculateDerivatives);
     if (barrier.getKnockType().isKnockIn()) {  // use in-out parity
       EuropeanVanillaOptionFunction vanillaFunction = EuropeanVanillaOptionFunction.of(
           underlyingOption.getStrike(), timeToExpiry, underlyingOption.getPutCall(), nSteps);
-      ValueDerivatives vanillaPrice = TREE.optionPriceAdjoint(vanillaFunction, data);
+      ValueDerivatives vanillaPrice = TREE.optionPriceAdjoint(vanillaFunction, data, calculateDerivatives);
       return ValueDerivatives.of(vanillaPrice.getValue() + rebateAtExpiry - barrierPrice.getValue(),
           DoubleArray.of(vanillaPrice.getDerivative(0) + rebateAtExpiryDerivative - barrierPrice.getDerivative(0)));
     }

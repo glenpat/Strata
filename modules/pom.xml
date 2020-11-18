@@ -446,9 +446,16 @@
 
   <!-- ==================================================================== -->
   <profiles>
-    <!-- PF - skip checkstyle and all tests -->
+    <!-- PF - skip checkstyle -->
     <profile>
       <id>skipChecks</id>
+      <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+      </properties>
+    </profile>
+    <!-- PF - skip checkstyle and all tests -->
+    <profile>
+      <id>skipChecksAndTest</id>
       <properties>
         <checkstyle.skip>true</checkstyle.skip>
         <skipTests>true</skipTests>

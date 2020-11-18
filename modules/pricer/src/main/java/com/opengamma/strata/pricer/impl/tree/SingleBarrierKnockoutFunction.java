@@ -5,12 +5,12 @@
  */
 package com.opengamma.strata.pricer.impl.tree;
 
-import java.util.Arrays;
-
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.collect.array.DoubleArray;
 import com.opengamma.strata.collect.array.DoubleMatrix;
 import com.opengamma.strata.product.option.BarrierType;
+
+import java.util.Arrays;
 
 /**
  * Single barrier knock-out option function.
@@ -75,7 +75,7 @@ abstract class SingleBarrierKnockoutFunction implements OptionFunction {
     for (int i = iMin; i < iMmax; ++i) {
       values[i] = Math.max(getSign() * (stateValue.get(i) - getStrike()), 0d);
     }
-    // modification if barrier lies between two consecutive nodes 
+    // modification if barrier lies between two consecutive nodes GenericImpliedVolatiltySolver
     double bd = barrierLevel - stateValue.get(index);
     double ub = stateValue.get(index + 1) - barrierLevel;
     double ud = stateValue.get(index + 1) - stateValue.get(index);

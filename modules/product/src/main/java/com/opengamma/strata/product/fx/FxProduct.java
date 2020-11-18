@@ -8,7 +8,10 @@ package com.opengamma.strata.product.fx;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.product.Product;
+
+import java.util.Optional;
 
 /**
  * A foreign exchange product, such as an FX forward, FX spot or FX option.
@@ -33,9 +36,15 @@ public interface FxProduct extends Product {
    * <p>
    * This represents the main currency pair of the FX. If the trade settles in a
    * third currency, that is not recorded here.
-   * 
+   *
    * @return the currency pair
    */
   public abstract CurrencyPair getCurrencyPair();
 
+  /**
+   * Gets the FxIndex that the FX trade is based on, if it has one.
+   *
+   * @return the fx index
+   */
+  public abstract Optional<FxIndex> getFxIndex();
 }

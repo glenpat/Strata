@@ -8,10 +8,14 @@ package com.opengamma.strata.calc.runner;
 import com.opengamma.strata.basics.currency.Currency;
 import com.opengamma.strata.basics.currency.FxMatrix;
 import com.opengamma.strata.basics.currency.FxRateProvider;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.data.FxMatrixId;
 import com.opengamma.strata.data.FxRateId;
 import com.opengamma.strata.data.MarketData;
+import com.opengamma.strata.data.MarketDataId;
 import com.opengamma.strata.data.ObservableSource;
+
+import java.util.Set;
 
 /**
  * The lookup that provides access to FX rates in market data.
@@ -114,10 +118,16 @@ public interface FxRateLookup extends CalculationParameter {
    * Obtains an FX rate provider based on the specified market data.
    * <p>
    * This provides an {@link FxRateProvider} suitable for obtaining FX rates.
-   * 
+   *
    * @param marketData  the complete set of market data for one scenario
    * @return the FX rate provider
    */
   public abstract FxRateProvider fxRateProvider(MarketData marketData);
 
+  /**
+   *
+   * @param fxIndex
+   * @return
+   */
+  Set<? extends MarketDataId<?>> valueRequirements(final FxIndex fxIndex);
 }

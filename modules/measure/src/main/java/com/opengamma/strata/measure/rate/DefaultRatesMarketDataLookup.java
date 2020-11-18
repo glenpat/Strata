@@ -5,30 +5,14 @@
  */
 package com.opengamma.strata.measure.rate;
 
-import static com.opengamma.strata.collect.Guavate.not;
-import static com.opengamma.strata.collect.Guavate.toImmutableSet;
-
-import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import org.joda.beans.ImmutableBean;
-import org.joda.beans.JodaBeanUtils;
-import org.joda.beans.MetaBean;
-import org.joda.beans.TypedMetaBean;
-import org.joda.beans.gen.BeanDefinition;
-import org.joda.beans.gen.ImmutableValidator;
-import org.joda.beans.gen.PropertyDefinition;
-import org.joda.beans.impl.light.LightMetaBean;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.FxRateProvider;
 import com.opengamma.strata.basics.index.FloatingRateIndex;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.basics.index.Index;
 import com.opengamma.strata.calc.CalculationRules;
 import com.opengamma.strata.calc.runner.CalculationParameter;
@@ -43,6 +27,24 @@ import com.opengamma.strata.data.scenario.ScenarioMarketData;
 import com.opengamma.strata.market.curve.CurveId;
 import com.opengamma.strata.market.observable.IndexQuoteId;
 import com.opengamma.strata.pricer.rate.RatesProvider;
+import org.joda.beans.ImmutableBean;
+import org.joda.beans.JodaBeanUtils;
+import org.joda.beans.MetaBean;
+import org.joda.beans.TypedMetaBean;
+import org.joda.beans.gen.BeanDefinition;
+import org.joda.beans.gen.ImmutableValidator;
+import org.joda.beans.gen.PropertyDefinition;
+import org.joda.beans.impl.light.LightMetaBean;
+
+import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import static com.opengamma.strata.collect.Guavate.not;
+import static com.opengamma.strata.collect.Guavate.toImmutableSet;
 
 /**
  * The rates lookup, used to select curves for pricing.
@@ -132,15 +134,35 @@ final class DefaultRatesMarketDataLookup
 
   //-------------------------------------------------------------------------
   @Override
-  public FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices) {
-    for (Currency currency : currencies) {
-      if (!discountCurves.keySet().contains(currency)) {
-        throw new IllegalArgumentException(msgCurrencyNotFound(currency));
+  public FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices,
+      Set<CurrencyPair> currencyPairs, Set<FxIndex> fxIndices) {
+
+    Set<Currency> allDiscountCurrencies = currencies;
+    Set<? extends MarketDataId<?>> additionalValueIds = ImmutableSet.of();
+
+    // check Index forward curves are available
+    for (Index index : indices) {
+
+      if (!forwardCurves.containsKey(index) && !isHistoric(index)) {
+
+        // check if an FxIndex - forwards can be calculated from spot FxRate plus discount curves
+        if (index instanceof FxIndex) {
+          final FxIndex fxIndex = (FxIndex) index;
+          // get required FxRateId
+          final Set<? extends MarketDataId<?>> marketDataIds = getFxRateLookup().valueRequirements(fxIndex);
+          additionalValueIds = Sets.union(additionalValueIds, marketDataIds);
+          // get additional discount curves required
+          allDiscountCurrencies = Sets.union(allDiscountCurrencies, fxIndex.getCurrencyPair().toSet());
+
+        } else {
+          throw new IllegalArgumentException(msgIndexNotFound(index));
+        }
       }
     }
-    for (Index index : indices) {
-      if (!forwardCurves.keySet().contains(index) && !isHistoric(index)) {
-        throw new IllegalArgumentException(msgIndexNotFound(index));
+
+    for (Currency currency : allDiscountCurrencies) {
+      if (!discountCurves.containsKey(currency)) {
+        throw new IllegalArgumentException(msgCurrencyNotFound(currency));
       }
     }
 
@@ -152,16 +174,24 @@ final class DefaultRatesMarketDataLookup
     // keys for forward curves (not requested for historic indices)
     Set<MarketDataId<?>> indexCurveIds = indices.stream()
         .filter(not(this::isHistoric))
-        .map(idx -> forwardCurves.get(idx))
+        .map(forwardCurves::get)
+        .filter(Objects::nonNull)
         .collect(toImmutableSet());
 
     // keys for discount factors
-    Set<MarketDataId<?>> discountFactorsIds = currencies.stream()
-        .map(ccy -> discountCurves.get(ccy))
+    Set<MarketDataId<?>> discountFactorsIds = allDiscountCurrencies.stream()
+        .map(discountCurves::get)
         .collect(toImmutableSet());
 
+    final ImmutableSet.Builder<MarketDataId<?>> b = ImmutableSet.builderWithExpectedSize(2);
+    final ImmutableSet<MarketDataId<?>> valueIds =
+        b.addAll(indexCurveIds)
+            .addAll(discountFactorsIds)
+            .addAll(additionalValueIds)
+            .build();
+
     return FunctionRequirements.builder()
-        .valueRequirements(Sets.union(indexCurveIds, discountFactorsIds))
+        .valueRequirements(valueIds)
         .timeSeriesRequirements(indexQuoteIds)
         .outputCurrencies(currencies)
         .observableSource(observableSource)
@@ -186,6 +216,10 @@ final class DefaultRatesMarketDataLookup
   @Override
   public FxRateProvider fxRateProvider(MarketData marketData) {
     return fxRateLookup.fxRateProvider(marketData);
+  }
+
+  @Override public Set<? extends MarketDataId<?>> valueRequirements(FxIndex fxIndex) {
+    return fxRateLookup.valueRequirements(fxIndex);
   }
 
   //-------------------------------------------------------------------------

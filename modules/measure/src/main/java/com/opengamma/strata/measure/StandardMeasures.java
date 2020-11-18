@@ -52,6 +52,8 @@ final class StandardMeasures {
   public static final Measure UNIT_PRICE = ImmutableMeasure.of("UnitPrice", false);
   // implied volatility
   public static final Measure IMPLIED_VOLATILITY = ImmutableMeasure.of("ImpliedVolatility", false);
+  // black-scholes vega (chg in unit price per 1.0% absolute change in BS vol)  TODO: this should be in CurrencyAmount (so convertible)
+  public static final Measure BS_VEGA = ImmutableMeasure.of("BsVega", false);
 
   //-------------------------------------------------------------------------
   // semi-parallel gamma bucketed PV01

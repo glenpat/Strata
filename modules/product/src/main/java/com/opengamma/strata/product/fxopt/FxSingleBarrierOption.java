@@ -9,6 +9,7 @@ import com.opengamma.strata.basics.ReferenceData;
 import com.opengamma.strata.basics.Resolvable;
 import com.opengamma.strata.basics.currency.CurrencyAmount;
 import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.index.FxIndex;
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.product.fx.FxOption;
 import com.opengamma.strata.product.option.Barrier;
@@ -114,12 +115,16 @@ public final class FxSingleBarrierOption
    * Gets currency pair of the base currency and counter currency.
    * <p>
    * This currency pair is conventional, thus indifferent to the direction of FX.
-   * 
+   *
    * @return the currency pair
    */
   @Override
   public CurrencyPair getCurrencyPair() {
     return this.underlyingOption.getCurrencyPair();
+  }
+
+  @Override public Optional<FxIndex> getFxIndex() {
+    return Optional.empty();
   }
 
   //-------------------------------------------------------------------------

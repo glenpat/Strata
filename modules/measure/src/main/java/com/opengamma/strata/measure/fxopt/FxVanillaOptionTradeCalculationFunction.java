@@ -5,11 +5,6 @@
  */
 package com.opengamma.strata.measure.fxopt;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.ReferenceData;
@@ -28,6 +23,11 @@ import com.opengamma.strata.measure.rate.RatesScenarioMarketData;
 import com.opengamma.strata.product.fxopt.FxVanillaOption;
 import com.opengamma.strata.product.fxopt.FxVanillaOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxVanillaOptionTrade;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Perform calculations on an FX vanilla option trade for each of a set of scenarios.
@@ -114,8 +114,7 @@ public class FxVanillaOptionTradeCalculationFunction
 
     // use lookup to build requirements
     RatesMarketDataLookup ratesLookup = parameters.getParameter(RatesMarketDataLookup.class);
-    FunctionRequirements ratesReqs = ratesLookup.requirements(
-        ImmutableSet.of(currencyPair.getBase(), currencyPair.getCounter()));
+    FunctionRequirements ratesReqs = ratesLookup.requirements(currencyPair);
     FxOptionMarketDataLookup optionLookup = parameters.getParameter(FxOptionMarketDataLookup.class);
     FunctionRequirements optionReqs = optionLookup.requirements(currencyPair);
     return ratesReqs.combinedWith(optionReqs);

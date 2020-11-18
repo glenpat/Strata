@@ -5,12 +5,19 @@
  */
 package com.opengamma.strata.product.fx;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import com.google.common.collect.Ordering;
+import com.opengamma.strata.basics.ReferenceData;
+import com.opengamma.strata.basics.Resolvable;
+import com.opengamma.strata.basics.currency.Currency;
+import com.opengamma.strata.basics.currency.CurrencyAmount;
+import com.opengamma.strata.basics.currency.CurrencyPair;
+import com.opengamma.strata.basics.currency.FxRate;
+import com.opengamma.strata.basics.currency.Payment;
+import com.opengamma.strata.basics.date.BusinessDayAdjustment;
+import com.opengamma.strata.basics.date.DateAdjuster;
+import com.opengamma.strata.basics.index.FxIndex;
+import com.opengamma.strata.collect.ArgChecker;
+import com.opengamma.strata.collect.Messages;
 import org.joda.beans.Bean;
 import org.joda.beans.BeanBuilder;
 import org.joda.beans.ImmutableBean;
@@ -27,18 +34,11 @@ import org.joda.beans.impl.direct.DirectMetaPropertyMap;
 import org.joda.beans.impl.direct.DirectPrivateBeanBuilder;
 import org.joda.beans.ser.SerDeserializer;
 
-import com.google.common.collect.Ordering;
-import com.opengamma.strata.basics.ReferenceData;
-import com.opengamma.strata.basics.Resolvable;
-import com.opengamma.strata.basics.currency.Currency;
-import com.opengamma.strata.basics.currency.CurrencyAmount;
-import com.opengamma.strata.basics.currency.CurrencyPair;
-import com.opengamma.strata.basics.currency.FxRate;
-import com.opengamma.strata.basics.currency.Payment;
-import com.opengamma.strata.basics.date.BusinessDayAdjustment;
-import com.opengamma.strata.basics.date.DateAdjuster;
-import com.opengamma.strata.collect.ArgChecker;
-import com.opengamma.strata.collect.Messages;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * A single foreign exchange, such as an FX forward or FX spot.
@@ -93,7 +93,11 @@ public final class FxSingle
   @PropertyDefinition(get = "optional")
   private final BusinessDayAdjustment paymentDateAdjustment;
 
-  //-------------------------------------------------------------------------
+  @Override public Optional<FxIndex> getFxIndex() {
+    return Optional.empty();
+  }
+//-------------------------------------------------------------------------
+
   /**
    * Creates an {@code FxSingle} from two payments.
    * <p>

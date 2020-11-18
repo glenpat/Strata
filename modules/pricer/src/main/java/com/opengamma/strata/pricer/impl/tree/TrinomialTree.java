@@ -89,9 +89,9 @@ public class TrinomialTree {
   /**
    * Compute option price and delta under the specified trinomial tree gird.
    * <p>
-   * The delta is the first derivative of the price with respect to spot, and approximated by the data embedded in 
+   * The delta is the first derivative of the price with respect to spot, and approximated by the data embedded in
    * the trinomial tree.
-   * 
+   *
    * @param function  the option
    * @param data  the trinomial tree data
    * @return the option price and spot delta
@@ -99,19 +99,38 @@ public class TrinomialTree {
   public ValueDerivatives optionPriceAdjoint(
       OptionFunction function,
       RecombiningTrinomialTreeData data) {
+    return optionPriceAdjoint(function, data, true);
+  }
+
+  /**
+   * Compute option price and delta under the specified trinomial tree gird.
+   * <p>
+   * The delta is the first derivative of the price with respect to spot, and approximated by the data embedded in 
+   * the trinomial tree.
+   *
+   * @param function  the option
+   * @param data  the trinomial tree data
+   * @return the option price and spot delta
+   */
+  public ValueDerivatives optionPriceAdjoint(
+      OptionFunction function,
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
 
     int nSteps = data.getNumberOfSteps();
     ArgChecker.isTrue(nSteps == function.getNumberOfSteps(), "mismatch in number of steps");
     DoubleArray values = function.getPayoffAtExpiryTrinomial(data.getStateValueAtLayer(nSteps));
     double delta = 0d;
-    for (int i = nSteps - 1; i > -1; --i) {
-      values = function.getNextOptionValues(
-          data.getDiscountFactorAtLayer(i), data.getProbabilityAtLayer(i), data.getStateValueAtLayer(i), values, i);
-      if (i == 1) {
-        DoubleArray stateValue = data.getStateValueAtLayer(1);
-        double d1 = (values.get(2) - values.get(1)) / (stateValue.get(2) - stateValue.get(1));
-        double d2 = (values.get(1) - values.get(0)) / (stateValue.get(1) - stateValue.get(0));
-        delta = 0.5 * (d1 + d2);
+    if (calculateDerivatives) {
+      for (int i = nSteps - 1; i > -1; --i) {
+        values = function.getNextOptionValues(
+            data.getDiscountFactorAtLayer(i), data.getProbabilityAtLayer(i), data.getStateValueAtLayer(i), values, i);
+        if (i == 1) {
+          DoubleArray stateValue = data.getStateValueAtLayer(1);
+          double d1 = (values.get(2) - values.get(1)) / (stateValue.get(2) - stateValue.get(1));
+          double d2 = (values.get(1) - values.get(0)) / (stateValue.get(1) - stateValue.get(0));
+          delta = 0.5 * (d1 + d2);
+        }
       }
     }
     return ValueDerivatives.of(values.get(0), DoubleArray.of(delta));

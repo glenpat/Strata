@@ -158,6 +158,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .index(fxIndex)
         .strikePrice(strikeRate)
         .expiry(expiryDateTime)
+        .knockType(KnockType.KNOCK_IN)
         .barrierType(BarrierType.UP)
         .optionType(EtdOptionType.EUROPEAN)
         .build();
@@ -166,6 +167,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionProductPricerTest {
         .index(fxIndex)
         .strikePrice(strikeRate)
         .expiry(expiryDateTime)
+        .knockType(KnockType.KNOCK_IN)
         .barrierType(BarrierType.DOWN)
         .optionType(EtdOptionType.EUROPEAN)
         .build();

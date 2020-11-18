@@ -5,20 +5,19 @@
  */
 package com.opengamma.strata.pricer.impl.tree;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.data.Offset.offset;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import com.opengamma.strata.basics.value.ValueDerivatives;
 import com.opengamma.strata.collect.array.DoubleArray;
 import com.opengamma.strata.collect.array.DoubleMatrix;
 import com.opengamma.strata.pricer.fxopt.RecombiningTrinomialTreeData;
 import com.opengamma.strata.product.common.PutCall;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 /**
  * Test {@link TrinomialTree}.
@@ -70,7 +69,7 @@ public class TrinomialTreeTest {
               double priceData = TRINOMIAL_TREE.optionPrice(function, treeData);
               double priceParams = TRINOMIAL_TREE.optionPrice(function, lattice, SPOT, vol, interest, dividend);
               assertThat(priceData).isEqualTo(priceParams);
-              ValueDerivatives priceDeriv = TRINOMIAL_TREE.optionPriceAdjoint(function, treeData);
+              ValueDerivatives priceDeriv = TRINOMIAL_TREE.optionPriceAdjoint(function, treeData, true);
               assertThat(priceDeriv.getValue()).isEqualTo(priceData);
               double priceUp = TRINOMIAL_TREE.optionPrice(function, lattice, SPOT + fdEps, vol, interest, dividend);
               double priceDw = TRINOMIAL_TREE.optionPrice(function, lattice, SPOT - fdEps, vol, interest, dividend);

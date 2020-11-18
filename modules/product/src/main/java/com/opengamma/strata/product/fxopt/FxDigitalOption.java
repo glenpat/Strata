@@ -30,6 +30,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.opengamma.strata.collect.ArgChecker.isEqual;
 
@@ -73,6 +74,10 @@ public final class FxDigitalOption
   @Override
   public CurrencyPair getCurrencyPair() {
     return this.index.getCurrencyPair();
+  }
+
+  @Override public Optional<FxIndex> getFxIndex() {
+    return Optional.of(index);
   }
 
   /**

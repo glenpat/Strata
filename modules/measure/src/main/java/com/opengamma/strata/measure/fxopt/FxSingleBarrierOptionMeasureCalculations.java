@@ -136,6 +136,102 @@ final class FxSingleBarrierOptionMeasureCalculations {
   }
 
   //-------------------------------------------------------------------------
+  // unitPriceVolVega price for all scenarios
+  ScenarioArray<double[]> unitPriceVolVega(
+      ResolvedFxOptionTrade trade,
+      RatesScenarioMarketData ratesMarketData,
+      FxOptionScenarioMarketData optionMarketData,
+      FxSingleBarrierOptionMethod method) {
+
+    CurrencyPair currencyPair = trade.getProduct().getCurrencyPair();
+    return ScenarioArray.of(
+        ratesMarketData.getScenarioCount(),
+        i -> unitPriceVolVega(
+            trade,
+            ratesMarketData.scenario(i).ratesProvider(),
+            optionMarketData.scenario(i).volatilities(currencyPair),
+            method));
+  }
+
+  // unitPriceVolVega for one scenario
+  double[] unitPriceVolVega(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      FxOptionVolatilities volatilities,
+      FxSingleBarrierOptionMethod method) {
+
+    if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
+      return new double[] {
+          trinomialTreePricer.unitPrice(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities)),
+          0.69D,
+          -0.69D
+      };
+    } else {
+      return new double[] {
+          blackPricer.unitPrice(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities)),
+          0.69D,
+          -0.69D
+      };
+    }
+  }
+
+  //-------------------------------------------------------------------------
+  // unit price for all scenarios
+  DoubleScenarioArray impliedVolatility(
+      ResolvedFxOptionTrade trade,
+      RatesScenarioMarketData ratesMarketData,
+      FxOptionScenarioMarketData optionMarketData,
+      FxSingleBarrierOptionMethod method) {
+
+    CurrencyPair currencyPair = trade.getProduct().getCurrencyPair();
+    return DoubleScenarioArray.of(
+        ratesMarketData.getScenarioCount(),
+        i -> impliedVolatility(
+            trade,
+            ratesMarketData.scenario(i).ratesProvider(),
+            optionMarketData.scenario(i).volatilities(currencyPair),
+            method));
+  }
+
+  // unit price for one scenario
+  double impliedVolatility(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      FxOptionVolatilities volatilities,
+      FxSingleBarrierOptionMethod method) {
+
+    throw new IllegalArgumentException("use multi calc instead");
+  }
+
+  //-------------------------------------------------------------------------
+  // bsVega for all scenarios
+  DoubleScenarioArray bsVega(
+      ResolvedFxOptionTrade trade,
+      RatesScenarioMarketData ratesMarketData,
+      FxOptionScenarioMarketData optionMarketData,
+      FxSingleBarrierOptionMethod method) {
+
+    CurrencyPair currencyPair = trade.getProduct().getCurrencyPair();
+    return DoubleScenarioArray.of(
+        ratesMarketData.getScenarioCount(),
+        i -> bsVega(
+            trade,
+            ratesMarketData.scenario(i).ratesProvider(),
+            optionMarketData.scenario(i).volatilities(currencyPair),
+            method));
+  }
+
+  // bsVega for one scenario
+  double bsVega(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      FxOptionVolatilities volatilities,
+      FxSingleBarrierOptionMethod method) {
+
+    throw new IllegalArgumentException("use multi calc instead");
+  }
+
+  //-------------------------------------------------------------------------
   // calculates calibrated sum PV01 for all scenarios
   MultiCurrencyScenarioArray pv01RatesCalibratedSum(
       ResolvedFxOptionTrade trade,

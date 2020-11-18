@@ -5,11 +5,6 @@
  */
 package com.opengamma.strata.measure.fx;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.ReferenceData;
@@ -27,6 +22,11 @@ import com.opengamma.strata.measure.rate.RatesMarketDataLookup;
 import com.opengamma.strata.measure.rate.RatesScenarioMarketData;
 import com.opengamma.strata.product.fx.FxSwapTrade;
 import com.opengamma.strata.product.fx.ResolvedFxSwapTrade;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Perform calculations on a single {@code FxSwapTrade} for each of a set of scenarios.
@@ -107,11 +107,11 @@ public class FxSwapTradeCalculationFunction
       ReferenceData refData) {
 
     // extract data from product
-    ImmutableSet<Currency> currencies = trade.getProduct().getCurrencyPair().toSet();
+    final CurrencyPair currencyPair = trade.getProduct().getCurrencyPair();
 
     // use lookup to build requirements
     RatesMarketDataLookup ratesLookup = parameters.getParameter(RatesMarketDataLookup.class);
-    return ratesLookup.requirements(currencies);
+    return ratesLookup.requirements(currencyPair);
   }
 
   //-------------------------------------------------------------------------

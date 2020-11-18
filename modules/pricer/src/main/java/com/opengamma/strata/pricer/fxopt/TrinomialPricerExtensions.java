@@ -31,7 +31,8 @@ public final class TrinomialPricerExtensions {
       ResolvedFxDigitalOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
-      RecombiningTrinomialTreeData data) {
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
 
     validate(option, ratesProvider, volatilities);
     validateData(option, ratesProvider, volatilities, data);
@@ -43,14 +44,14 @@ public final class TrinomialPricerExtensions {
     if (option.getOptionType() == EtdOptionType.EUROPEAN) {
       DigitalOptionFunction digitalFunction = DigitalOptionFunction.of(
           option.getStrikePrice(), timeToExpiry, option.getBarrierType(), option.getKnockType(), nSteps);
-      return TREE.optionPriceAdjoint(digitalFunction, data);
+      return TREE.optionPriceAdjoint(digitalFunction, data, calculateDerivatives);
 
     } else {
       final CurrencyAmount payment = option.getPayment();
       final CurrencyAmount signedNotional = option.getSignedNotional();
       return priceDerivativesOneTouch(signedNotional, option.getIndex().getCurrencyPair().getCounter(),
           option.getBarrierType(), option.getKnockType(), option.getStrikePrice(),
-          payment, data);
+          payment, data, calculateDerivatives);
     }
   }
 
@@ -61,7 +62,8 @@ public final class TrinomialPricerExtensions {
       KnockType knockType,
       double barrierLevel,
       CurrencyAmount rebateCurrencyAmount,
-      RecombiningTrinomialTreeData data) {
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
 
     int nSteps = data.getNumberOfSteps();
 
@@ -101,7 +103,7 @@ public final class TrinomialPricerExtensions {
             barrierLevel,
             DoubleArray.ofUnsafe(rebateArray));
 
-    return TREE.optionPriceAdjoint(barrierFunction, data);
+    return TREE.optionPriceAdjoint(barrierFunction, data, calculateDerivatives);
   }
 
   private static void validate(ResolvedFxOption option,
@@ -117,7 +119,8 @@ public final class TrinomialPricerExtensions {
       ResolvedFxVanillaOption option,
       RatesProvider ratesProvider,
       BlackFxOptionVolatilities volatilities,
-      RecombiningTrinomialTreeData data) {
+      RecombiningTrinomialTreeData data,
+      boolean calculateDerivatives) {
     validate(option, ratesProvider, volatilities);
     validateData(option, ratesProvider, volatilities, data);
 
@@ -127,7 +130,7 @@ public final class TrinomialPricerExtensions {
 
     EuropeanVanillaOptionFunction vanillaFunction = EuropeanVanillaOptionFunction.of(
         option.getStrike(), timeToExpiry, option.getPutCall(), nSteps);
-    return TREE.optionPriceAdjoint(vanillaFunction, data);
+    return TREE.optionPriceAdjoint(vanillaFunction, data, calculateDerivatives);
   }
 
   private static void validate(ResolvedFxVanillaOption option,

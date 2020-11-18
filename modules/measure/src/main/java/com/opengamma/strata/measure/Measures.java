@@ -136,13 +136,18 @@ public final class Measures {
    * Since the target is the same for all scenarios, the result is not wrapped in {@link ScenarioArray}.
    */
   public static final Measure RESOLVED_TARGET = Measure.of(StandardMeasures.RESOLVED_TARGET.getName());
-
   /**
    * Measure representing the implied volatility of the calculation target.
    * <p>
-   * The result is a single currency monetary amount in the reporting currency.
+   * The price is represented as a {@code double}
    */
   public static final Measure IMPLIED_VOLATILITY = Measure.of(StandardMeasures.IMPLIED_VOLATILITY.getName());
+  /**
+   * Measure representing the 1% absolute vega of the calculation target.
+   * <p>
+   * The price is represented as a {@code double}
+   */
+  public static final Measure BS_VEGA = Measure.of(StandardMeasures.BS_VEGA.getName());
 
   //-------------------------------------------------------------------------
   private Measures() {

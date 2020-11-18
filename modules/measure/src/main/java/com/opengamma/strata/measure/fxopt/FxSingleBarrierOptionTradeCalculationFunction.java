@@ -5,11 +5,6 @@
  */
 package com.opengamma.strata.measure.fxopt;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.opengamma.strata.basics.ReferenceData;
@@ -28,6 +23,11 @@ import com.opengamma.strata.measure.rate.RatesScenarioMarketData;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOption;
 import com.opengamma.strata.product.fxopt.FxSingleBarrierOptionTrade;
 import com.opengamma.strata.product.fxopt.ResolvedFxSingleBarrierOptionTrade;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Perform calculations on an FX single barrier option trade for each of a set of scenarios.
@@ -115,8 +115,7 @@ public class FxSingleBarrierOptionTradeCalculationFunction
 
     // use lookup to build requirements
     RatesMarketDataLookup ratesLookup = parameters.getParameter(RatesMarketDataLookup.class);
-    FunctionRequirements ratesReqs = ratesLookup.requirements(
-        ImmutableSet.of(currencyPair.getBase(), currencyPair.getCounter()));
+    FunctionRequirements ratesReqs = ratesLookup.requirements(currencyPair);
     FxOptionMarketDataLookup optionLookup = parameters.getParameter(FxOptionMarketDataLookup.class);
     FunctionRequirements optionReqs = optionLookup.requirements(currencyPair);
     return ratesReqs.combinedWith(optionReqs);
