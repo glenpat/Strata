@@ -146,7 +146,7 @@ public final class FxDigitalOptionTrade
    */
   @Override
   public TradeInfo getInfo() {
-    return this.info;
+    return info;
   }
 
   //-----------------------------------------------------------------------
@@ -156,7 +156,7 @@ public final class FxDigitalOptionTrade
    */
   @Override
   public FxDigitalOption getProduct() {
-    return this.product;
+    return product;
   }
 
   //-----------------------------------------------------------------------
@@ -168,7 +168,7 @@ public final class FxDigitalOptionTrade
    * @return the value of the property, not null
    */
   public AdjustablePayment getPremium() {
-    return this.premium;
+    return premium;
   }
 
   //-----------------------------------------------------------------------
@@ -187,9 +187,9 @@ public final class FxDigitalOptionTrade
     }
     if (obj != null && obj.getClass() == this.getClass()) {
       FxDigitalOptionTrade other = (FxDigitalOptionTrade) obj;
-      return JodaBeanUtils.equal(this.info, other.info) &&
-          JodaBeanUtils.equal(this.product, other.product) &&
-          JodaBeanUtils.equal(this.premium, other.premium);
+      return JodaBeanUtils.equal(info, other.info) &&
+          JodaBeanUtils.equal(product, other.product) &&
+          JodaBeanUtils.equal(premium, other.premium);
     }
     return false;
   }
@@ -197,9 +197,9 @@ public final class FxDigitalOptionTrade
   @Override
   public int hashCode() {
     int hash = getClass().hashCode();
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.info);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.product);
-    hash = hash * 31 + JodaBeanUtils.hashCode(this.premium);
+    hash = hash * 31 + JodaBeanUtils.hashCode(info);
+    hash = hash * 31 + JodaBeanUtils.hashCode(product);
+    hash = hash * 31 + JodaBeanUtils.hashCode(premium);
     return hash;
   }
 
@@ -207,9 +207,9 @@ public final class FxDigitalOptionTrade
   public String toString() {
     StringBuilder buf = new StringBuilder(128);
     buf.append("FxDigitalOptionTrade{");
-    buf.append("info").append('=').append(JodaBeanUtils.toString(this.info)).append(',').append(' ');
-    buf.append("product").append('=').append(JodaBeanUtils.toString(this.product)).append(',').append(' ');
-    buf.append("premium").append('=').append(JodaBeanUtils.toString(this.premium));
+    buf.append("info").append('=').append(JodaBeanUtils.toString(info)).append(',').append(' ');
+    buf.append("product").append('=').append(JodaBeanUtils.toString(product)).append(',').append(' ');
+    buf.append("premium").append('=').append(JodaBeanUtils.toString(premium));
     buf.append('}');
     return buf.toString();
   }
@@ -258,11 +258,11 @@ public final class FxDigitalOptionTrade
     protected MetaProperty<?> metaPropertyGet(String propertyName) {
       switch (propertyName.hashCode()) {
         case 3237038:  // info
-          return this.info;
+          return info;
         case -309474065:  // product
-          return this.product;
+          return product;
         case -318452137:  // premium
-          return this.premium;
+          return premium;
       }
       return super.metaPropertyGet(propertyName);
     }
@@ -279,7 +279,7 @@ public final class FxDigitalOptionTrade
 
     @Override
     public Map<String, MetaProperty<?>> metaPropertyMap() {
-      return this.metaPropertyMap$;
+      return metaPropertyMap$;
     }
 
     //-----------------------------------------------------------------------
@@ -288,7 +288,7 @@ public final class FxDigitalOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<TradeInfo> info() {
-      return this.info;
+      return info;
     }
 
     /**
@@ -296,7 +296,7 @@ public final class FxDigitalOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<FxDigitalOption> product() {
-      return this.product;
+      return product;
     }
 
     /**
@@ -304,7 +304,7 @@ public final class FxDigitalOptionTrade
      * @return the meta-property, not null
      */
     public MetaProperty<AdjustablePayment> premium() {
-      return this.premium;
+      return premium;
     }
 
     //-----------------------------------------------------------------------
@@ -364,11 +364,11 @@ public final class FxDigitalOptionTrade
     public Object get(String propertyName) {
       switch (propertyName.hashCode()) {
         case 3237038:  // info
-          return this.info;
+          return info;
         case -309474065:  // product
-          return this.product;
+          return product;
         case -318452137:  // premium
-          return this.premium;
+          return premium;
         default:
           throw new NoSuchElementException("Unknown property: " + propertyName);
       }
@@ -401,9 +401,9 @@ public final class FxDigitalOptionTrade
     @Override
     public FxDigitalOptionTrade build() {
       return new FxDigitalOptionTrade(
-          this.info,
-          this.product,
-          this.premium);
+          info,
+          product,
+          premium);
     }
 
     //-----------------------------------------------------------------------
@@ -450,9 +450,9 @@ public final class FxDigitalOptionTrade
     public String toString() {
       StringBuilder buf = new StringBuilder(128);
       buf.append("FxDigitalOptionTrade.Builder{");
-      buf.append("info").append('=').append(JodaBeanUtils.toString(this.info)).append(',').append(' ');
-      buf.append("product").append('=').append(JodaBeanUtils.toString(this.product)).append(',').append(' ');
-      buf.append("premium").append('=').append(JodaBeanUtils.toString(this.premium));
+      buf.append("info").append('=').append(JodaBeanUtils.toString(info)).append(',').append(' ');
+      buf.append("product").append('=').append(JodaBeanUtils.toString(product)).append(',').append(' ');
+      buf.append("premium").append('=').append(JodaBeanUtils.toString(premium));
       buf.append('}');
       return buf.toString();
     }

@@ -62,6 +62,7 @@ public class FxOptionTradeCalculationFunction<T extends FxOptionTrade>
    */
   private static final ImmutableMap<Measure, SingleMeasureCalculation> CALCULATORS =
       ImmutableMap.<Measure, SingleMeasureCalculation>builder()
+          .put(Measures.UNIT_PRICE, FxSingleBarrierOptionMeasureCalculations.DEFAULT::unitPrice)
           .put(Measures.PRESENT_VALUE, FxSingleBarrierOptionMeasureCalculations.DEFAULT::presentValue)
           .put(Measures.PV01_CALIBRATED_SUM, FxSingleBarrierOptionMeasureCalculations.DEFAULT::pv01RatesCalibratedSum)
           .put(Measures.PV01_CALIBRATED_BUCKETED,

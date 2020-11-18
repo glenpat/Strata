@@ -5,13 +5,13 @@
  */
 package com.opengamma.strata.pricer.impl.option;
 
-import java.util.function.Function;
-
 import com.google.common.primitives.Doubles;
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.math.MathException;
 import com.opengamma.strata.math.impl.rootfinding.BisectionSingleRootFinder;
 import com.opengamma.strata.math.impl.rootfinding.BracketRoot;
+
+import java.util.function.Function;
 
 /**
  * Finds an implied volatility (a parameter that put into a model gives the market pirce of an option)
@@ -72,10 +72,28 @@ public class GenericImpliedVolatiltySolver {
     };
   }
 
+  /**
+   * Creates an instance.
+   *
+   * @param pricingFunc  the pricing and vega function
+   */
+  public GenericImpliedVolatiltySolver(PricingFunction pricingFunc) {
+    ArgChecker.notNull(pricingFunc, "pricingFunc");
+    this.priceFunc = pricingFunc::calcPrice;
+    this.priceAndVegaFunc = pricingFunc::calcPriceAndVega;
+  }
+
+  public interface PricingFunction {
+    double calcPrice(final double volatility);
+
+    double[] calcPriceAndVega(final double volatility);
+  }
+
   //-------------------------------------------------------------------------
+
   /**
    * Computes the implied volatility.
-   * 
+   *
    * @param optionPrice  the option price
    * @return the volatility
    */

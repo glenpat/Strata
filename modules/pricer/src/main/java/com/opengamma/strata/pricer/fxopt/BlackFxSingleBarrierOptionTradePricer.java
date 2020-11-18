@@ -45,7 +45,7 @@ public class BlackFxSingleBarrierOptionTradePricer {
 
   /**
    * Creates an instance.
-   * 
+   *
    * @param productPricer  the pricer for {@link ResolvedFxSingleBarrierOption}
    * @param paymentPricer  the pricer for {@link Payment}
    */
@@ -57,11 +57,33 @@ public class BlackFxSingleBarrierOptionTradePricer {
   }
 
   //-------------------------------------------------------------------------
+
+  /**
+   * Calculates the present value of the FX barrier option.
+   * <p>
+   * The present value of the option is the value on the valuation date.
+   *
+   * @param trade  the option trade
+   * @param ratesProvider  the rates provider
+   * @param volatilities  the Black volatility provider
+   * @return the present value of the trade
+   */
+  public double unitPrice(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+
+    ResolvedFxOption product = trade.getProduct();
+    return this.productPricer.price(product, ratesProvider, volatilities);
+  }
+
+  //-------------------------------------------------------------------------
+
   /**
    * Calculates the present value of the FX barrier option trade.
    * <p>
    * The present value of the trade is the value on the valuation date.
-   * 
+   *
    * @param trade  the option trade
    * @param ratesProvider  the rates provider
    * @param volatilities  the Black volatility provider

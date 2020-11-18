@@ -30,7 +30,6 @@ import com.opengamma.strata.measure.fx.FxSingleTradeCalculationFunction;
 import com.opengamma.strata.measure.fx.FxSwapTradeCalculationFunction;
 import com.opengamma.strata.measure.fxopt.FxOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.fxopt.FxOptionVolatilitiesMarketDataFunction;
-import com.opengamma.strata.measure.fxopt.FxVanillaOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.index.IborFutureOptionTradeCalculationFunction;
 import com.opengamma.strata.measure.index.IborFutureTradeCalculationFunction;
 import com.opengamma.strata.measure.index.OvernightFutureTradeCalculationFunction;
@@ -107,10 +106,11 @@ public final class StandardComponents {
 //      new FxOptionTradeCalculationFunction<>(FxVanillaOptionTrade.class),
       new FxOptionTradeCalculationFunction<>(FxSingleBarrierOptionTrade.class),
       new FxOptionTradeCalculationFunction<>(FxDigitalOptionTrade.class),
+      new FxOptionTradeCalculationFunction<>(FxVanillaOptionTrade.class),
 
       new FxSingleTradeCalculationFunction(),
       new FxSwapTradeCalculationFunction(),
-      new FxVanillaOptionTradeCalculationFunction(),
+//      new FxVanillaOptionTradeCalculationFunction(),
       new IborCapFloorTradeCalculationFunction(),
       new SecurityPositionCalculationFunction(),
       new SecurityTradeCalculationFunction(),

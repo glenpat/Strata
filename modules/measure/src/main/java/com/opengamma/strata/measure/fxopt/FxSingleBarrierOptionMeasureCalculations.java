@@ -10,6 +10,7 @@ import com.opengamma.strata.basics.currency.CurrencyPair;
 import com.opengamma.strata.basics.currency.MultiCurrencyAmount;
 import com.opengamma.strata.collect.ArgChecker;
 import com.opengamma.strata.data.scenario.CurrencyScenarioArray;
+import com.opengamma.strata.data.scenario.DoubleScenarioArray;
 import com.opengamma.strata.data.scenario.MultiCurrencyScenarioArray;
 import com.opengamma.strata.data.scenario.ScenarioArray;
 import com.opengamma.strata.market.param.CurrencyParameterSensitivities;
@@ -99,6 +100,38 @@ final class FxSingleBarrierOptionMeasureCalculations {
       return this.trinomialTreePricer.presentValue(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
     } else {
       return this.blackPricer.presentValue(trade, ratesProvider, checkBlackVolatilities(volatilities));
+    }
+  }
+
+  //-------------------------------------------------------------------------
+  // unit price for all scenarios
+  DoubleScenarioArray unitPrice(
+      ResolvedFxOptionTrade trade,
+      RatesScenarioMarketData ratesMarketData,
+      FxOptionScenarioMarketData optionMarketData,
+      FxSingleBarrierOptionMethod method) {
+
+    CurrencyPair currencyPair = trade.getProduct().getCurrencyPair();
+    return DoubleScenarioArray.of(
+        ratesMarketData.getScenarioCount(),
+        i -> unitPrice(
+            trade,
+            ratesMarketData.scenario(i).ratesProvider(),
+            optionMarketData.scenario(i).volatilities(currencyPair),
+            method));
+  }
+
+  // unit price for one scenario
+  double unitPrice(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      FxOptionVolatilities volatilities,
+      FxSingleBarrierOptionMethod method) {
+
+    if (method == FxSingleBarrierOptionMethod.TRINOMIAL_TREE) {
+      return trinomialTreePricer.unitPrice(trade, ratesProvider, checkTrinomialTreeVolatilities(volatilities));
+    } else {
+      return this.blackPricer.unitPrice(trade, ratesProvider, checkBlackVolatilities(volatilities));
     }
   }
 

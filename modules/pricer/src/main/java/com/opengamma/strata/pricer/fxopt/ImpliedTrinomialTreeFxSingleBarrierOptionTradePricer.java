@@ -47,7 +47,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
 
   /**
    * Creates an instance.
-   * 
+   *
    * @param productPricer  the pricer for {@link ResolvedFxSingleBarrierOption}
    * @param paymentPricer  the pricer for {@link Payment}
    */
@@ -59,6 +59,32 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
   }
 
   //-------------------------------------------------------------------------
+
+  /**
+   * Calculates the price of the FX barrier option product.
+   * <p>
+   * The price of the product is the value on the valuation date for one unit of the base currency
+   * and is expressed in the counter currency. The price does not take into account the long/short flag.
+   * <p>
+   * The trinomial tree is first calibrated to Black volatilities,
+   * then the price is computed based on the calibrated tree.
+   *
+   * @param trade  the option trade
+   * @param ratesProvider  the rates provider
+   * @param volatilities  the Black volatility provider
+   * @return the price of the product
+   */
+  public double unitPrice(
+      ResolvedFxOptionTrade trade,
+      RatesProvider ratesProvider,
+      BlackFxOptionVolatilities volatilities) {
+
+    ResolvedFxOption product = trade.getProduct();
+    return this.productPricer.price(product, ratesProvider, volatilities);
+  }
+
+  //-------------------------------------------------------------------------
+
   /**
    * Calculates the present value of the FX barrier option trade.
    * <p>
@@ -66,7 +92,7 @@ public class ImpliedTrinomialTreeFxSingleBarrierOptionTradePricer {
    * <p>
    * The trinomial tree is first calibrated to Black volatilities, 
    * then the price is computed based on the calibrated tree.
-   * 
+   *
    * @param trade  the option trade
    * @param ratesProvider  the rates provider
    * @param volatilities  the Black volatility provider
