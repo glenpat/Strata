@@ -272,7 +272,7 @@ public interface RatesMarketDataLookup extends FxRateLookup, CalculationParamete
    * @throws IllegalArgumentException if unable to create requirements
    */
   public default FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices) {
-    return requirements(currencies, indices, ImmutableSet.of(), ImmutableSet.of());
+    return requirements(currencies, indices, ImmutableSet.of());
   }
 
   /**
@@ -286,7 +286,7 @@ public interface RatesMarketDataLookup extends FxRateLookup, CalculationParamete
    * @throws IllegalArgumentException if unable to create requirements
    */
   public default FunctionRequirements requirements(CurrencyPair currencyPair) {
-    return requirements(ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(currencyPair), ImmutableSet.of());
+    return requirements(ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(currencyPair));
   }
 
   /**
@@ -300,7 +300,7 @@ public interface RatesMarketDataLookup extends FxRateLookup, CalculationParamete
    * @throws IllegalArgumentException if unable to create requirements
    */
   public default FunctionRequirements requirements(FxIndex fxIndex) {
-    return requirements(ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(), ImmutableSet.of(fxIndex));
+    return requirements(ImmutableSet.of(), ImmutableSet.of(fxIndex), ImmutableSet.of());
   }
 
   /**
@@ -309,12 +309,11 @@ public interface RatesMarketDataLookup extends FxRateLookup, CalculationParamete
    * @param currencies  the currencies, for which discount factors will be needed
    * @param indices  the indices, for which forward curves and time-series will be needed
    * @param currencyPairs the pairs, for which fx rates will be needed
-   * @param fxIndices the indiced, for which fx rates will be needed
    * @return the requirements
    * @throws IllegalArgumentException if unable to create requirements
    */
   public abstract FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices,
-      Set<CurrencyPair> currencyPairs, Set<FxIndex> fxIndices);
+      Set<CurrencyPair> currencyPairs);
 
   //-------------------------------------------------------------------------
 

@@ -135,7 +135,7 @@ final class DefaultRatesMarketDataLookup
   //-------------------------------------------------------------------------
   @Override
   public FunctionRequirements requirements(Set<Currency> currencies, Set<? extends Index> indices,
-      Set<CurrencyPair> currencyPairs, Set<FxIndex> fxIndices) {
+      Set<CurrencyPair> currencyPairs) {
 
     Set<Currency> allDiscountCurrencies = currencies;
     Set<? extends MarketDataId<?>> additionalValueIds = ImmutableSet.of();
@@ -166,8 +166,9 @@ final class DefaultRatesMarketDataLookup
       }
     }
 
-    // keys for time-series (requested for historic indices)
+    // keys for time-series (requested for historic indices - except for FxIndex without curve)
     Set<ObservableId> indexQuoteIds = indices.stream()
+        .filter(index -> forwardCurves.containsKey(index) || isHistoric(index))
         .map(IndexQuoteId::of)
         .collect(toImmutableSet());
 
